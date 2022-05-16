@@ -4,4 +4,9 @@ from django.shortcuts import render,HttpResponse
 
 def home(request):
     context={}
-    return HttpResponse('hello world')
+    return render(request,'mainApp/dashboard.html')
+
+def logoutUser(request):
+    return HttpResponse('logout')
+
+
