@@ -1,0 +1,53 @@
+{% extends 'mainApp/main.html' %}
+
+{% block content %}
+    <h3>Kelola Data Sistem</h3>
+    <div class="row row-form-sistem">
+        <div class="col">
+            <div class="card shadow mb-4">
+                <!-- Card Header - Dropdown -->
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Buat Data Sistem</h6>
+                </div>
+                <!-- Card Body -->
+                <div class="card-body">
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row row-datatable">
+        <div class="col">
+            <div class="card shadow mb-4">
+                <!-- Card Header - Dropdown -->
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">List Data Sistem</h6>
+                </div>
+                <!-- Card Body -->
+                <div class="card-body">
+                    <table id="example" class="table table-striped table-bordered" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Nama Sistem</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+        
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{%endblock%}
+
+{% block script %}
+    <script>
+        $(document).ready(function () {
+            $('#example').DataTable();
+        });
+    </script>
+{% endblock %}
+
