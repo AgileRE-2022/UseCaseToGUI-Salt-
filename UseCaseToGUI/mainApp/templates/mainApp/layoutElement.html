@@ -1,0 +1,97 @@
+{% extends 'mainApp/main.html' %}
+
+{% load static %}
+
+{% block css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.2/font/bootstrap-icons.css">
+<style>
+    .col-status:nth-child(even){
+        background-color: rgb(243, 243, 243);
+    }
+    .todo{
+        background-color: #fff;
+        box-shadow: rgba(15, 15, 15, 0.1) 0px 0px 0px 1px,
+            rgba(15, 15, 15, 0.1) 0px 2px 4px;
+        border-radius: 4px;
+        padding: 0.5rem 1rem;
+        margin: 0.5rem 0;
+    }
+    .conf{
+        color: #ccc;
+        cursor: pointer;
+    }
+    .conf:hover{
+        color: #343444;
+    }
+    
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="layout-container">
+    <h4 class="mb-4">Layout Element</h3>
+    <div class="row row-status">
+        <div class="col-4 col-status" style="height: 1000px;">
+            <h5>No Status</h5>
+            <div class="todo position-relative d-flex justify-content-between" draggable="true">
+                <span>Buy Pizza</span><span class="conf" style="display: none;"><i class="bi-gear"></i></span>
+            </div>
+            <div class="todo position-relative d-flex justify-content-between" draggable="true">
+                <span>Buy Melon</span> <span class="conf" style="display: none;"><i class="bi-gear"></i></span>
+            </div>
+        </div>
+        <div class="col-4 col-status status-sorted-element">
+            <h5>Sorted Element</h5>
+        </div>
+        <div class="col-4 col-conf">
+            <h5>Configuration Element</h5>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+    $(document).ready(function(){
+        const todos = $(".todo"); //draggable
+        const all_col_status = $(".col-status") //dragTarget
+        let draggableTodo = null; 
+
+        todos.on('dragstart',dragStart);
+        todos.on('dragend',dragEnd);
+
+        function dragStart(){
+            draggableTodo = $(this);
+        }
+        function dragEnd(){
+            draggableTodo = null;
+        }
+
+        all_col_status.on('dragover',dragOver); // dragover is event attached to dropTarget not draggables
+        all_col_status.on('dragenter',dragEnter);
+        all_col_status.on('dragleave',dragLeave);
+        all_col_status.on('drop',dragDrop);
+
+        function dragOver(e){
+            e.preventDefault(); // by default dropping an element is disable, so we need to prevent this behaviour
+        }
+        function dragEnter(){
+            $(this).css({ "border": "1px dashed #ccc" });
+        }
+        function dragLeave(){
+            $(this).css({ "border": "none" });
+        }
+        function dragDrop() {
+            $(this).css({ "border": "none" });
+            $(this).append(draggableTodo);
+
+            if($(this).hasClass('status-sorted-element')){
+                draggableTodo.find('.conf').show();
+            }else{
+                draggableTodo.find('.conf').hide();
+            }
+        
+        }
+    });
+</script>
+{% endblock %}

@@ -9,5 +9,6 @@ urlpatterns = [
     path('logout/', views.logoutUser , name="logout"),
 
     path('useCaseScenario/', views.useCaseScenario , name="useCaseScenario"),
+    path('layoutElement/', views.layoutElement , name="layoutElement"),
 
 ]

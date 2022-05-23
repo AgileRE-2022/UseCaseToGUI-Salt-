@@ -60,4 +60,9 @@ def useCaseScenario(request):
     context={}
     return render(request,'mainApp/useCaseScenario.html')
 
+@login_required(login_url='login')
+def layoutElement(request):
+    context={}
+    return render(request,'mainApp/layoutElement.html')
+
 
