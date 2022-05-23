@@ -55,4 +55,9 @@ def home(request):
     context={}
     return render(request,'mainApp/index.html')
 
+@login_required(login_url='login')
+def useCaseScenario(request):
+    context={}
+    return render(request,'mainApp/useCaseScenario.html')
+
 

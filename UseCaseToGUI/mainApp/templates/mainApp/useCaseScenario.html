@@ -1,0 +1,437 @@
+{% extends 'mainApp/main.html' %}
+
+{% block content %}
+<h3 class="mb-2">Kelola Use Case Scenario</h3>
+<div class="row row-form-sistem" style="margin-bottom: 70px;">
+    <div class="col">
+        <!-- Form -->
+        <form action="" method="post">
+            {% csrf_token %}
+            <!-- Description Card -->
+            <div class="card shadow mb-4 card-description">
+                <!-- Card Header - Dropdown -->
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Use Case Scenario Description</h6>
+                </div>
+
+                <!-- Card Body -->
+                <div class="card-body">
+                    <div class="row row-actor-name mb-3">
+                        <div class="col-3">
+                            <span>Nama Aktor</span>
+                        </div>
+                        <div class="col-9">
+                            <input type="text" class="form-control" placeholder="Nama Aktor" aria-label="Username"aria-describedby="basic-addon1" required name="actor" required>
+                        </div>
+                    </div>
+    
+                    <div class="row row-feature-name mb-3">
+                        <div class="col-3">
+                            <span>Nama Fitur</span>
+                        </div>
+                        <div class="col-9">
+                            <input type="text" class="form-control" placeholder="Nama Fitur" aria-describedby="basic-addon1" required>
+                        </div>
+                    </div>
+    
+                    <div class="row row-feature-description mb-3">
+                        <div class="col-3">
+                            <span>Deskripsi Fitur</span>
+                        </div>
+                        <div class="col-9">
+                            <input type="text" class="form-control" placeholder="Deskripsi Fitur" aria-describedby="basic-addon1" name="feature_description" required>
+                        </div>
+                    </div>
+    
+                    <div class="row row-pre-condition mb-3">
+                        <div class="col-3">
+                            <span>Kondisi Awal</span>
+                        </div>
+                        <div class="col-9">
+                            <input type="text" class="form-control" placeholder="Kondisi Awal" aria-describedby="basic-addon1" name="pre_condition" required>
+                        </div>
+                    </div>
+    
+                    <div class="row row-post-condition mb-3">
+                        <div class="col-3">
+                            <span>Kondisi Akhir</span>
+                        </div>
+                        <div class="col-9">
+                            <input type="text" class="form-control" placeholder="Kondisi Akhir"
+                                aria-describedby="basic-addon1" name="post_condition" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End Description Card -->
+
+            <!-- Normal Card -->
+            <div class="card shadow mb-4 card-normal">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Normal Scenario</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row row-normal-scenario mb-3">
+                        <div class="col-2">
+                            <span>Skenario Normal</span>
+                        </div>
+                        <div class="col-10 col-normal-scenario">
+                            <div class="row row-append-normal-action">
+                                <div class="col">
+                                    <div class="row row-normal-input mb-3">
+                                        <div class="col-1">
+                                            <small class="action-order">Action-1</small>
+                                        </div>
+                                        <div class="col-3">
+                                            <span>Role:</span>
+                                            <select class="form-select" name="normal_roles[]" aria-label="Default select example" required>
+                                                <option selected value="">-- Select Roles --</option>
+                                                <option value="user">User</option>
+                                                <option value="sistem">Sistem</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-5">
+                                            <span>Action:</span>
+                                            <textarea class="form-control" placeholder="Action" name="normal_actions[]" rows="3" required></textarea>
+                                        </div>
+                                        <div class="col-3">
+                                            <span>Element:</span>
+                                            <div class="element-result"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row row-add-normal-action">
+                        <div class="col d-flex justify-content-end">
+                            <a class="btn btn-info add-normal-action">Add Action</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End Normal Card -->
+    
+            <!-- Alternative Card -->
+            <div class="card shadow mb-4 card-alternative">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Alternative Scenario</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row row-alternative-scenario mb-3">
+                        <div class="col-2">
+                            <span>Alternative Scenario</span>
+                        </div>
+                        <div class="col-10 col-alternative-scenario">
+                            <div class="row row-append-alternative-action">
+                                <div class="col">
+                                    <div class="row row-alternative-input mb-3">
+                                        <div class="col-1">
+                                            <small class="action-order">Action-1</small>
+                                        </div>
+                                        <div class="col-3">
+                                            <span>Role:</span>
+                                            <select class="form-select" name="alternative_roles[]" aria-label="Default select example">
+                                                <option selected value="">-- Select Roles --</option>
+                                                <option value="user">User</option>
+                                                <option value="sistem">Sistem</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-5">
+                                            <span>Action:</span>
+                                            <textarea class="form-control" placeholder="Action" name="alternative_actions[]"
+                                                rows="3"></textarea>
+                                        </div>
+                                        <div class="col-3">
+                                            <span>Element:</span>
+                                            <div class="element-result"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <div class="row row-add-alternative-action">
+                        <div class="col d-flex justify-content-end">
+                            <a class="btn btn-info add-alternative-action">Add Action</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--End Alternative Card -->
+    
+            <!-- Exception Card -->
+            <div class="card shadow mb-4 card-exception">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Exception Scenario</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row row-exception-scenario mb-3">
+                        <div class="col-2">
+                            <span>Exception Scenario</span>
+                        </div>
+                        <div class="col-10 col-exception-scenario">
+                            <div class="row row-append-exception-action">
+                                <div class="col">
+                                    <div class="row row-exception-input mb-3">
+                                        <div class="col-1">
+                                            <small class="action-order">Action-1</small>
+                                        </div>
+                                        <div class="col-3">
+                                            <span>Role:</span>
+                                            <select class="form-select" name="exception_roles[]" aria-label="Default select example">
+                                                <option selected value="">-- Select Roles --</option>
+                                                <option value="user">User</option>
+                                                <option value="sistem">Sistem</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-5">
+                                            <span>Action:</span>
+                                            <textarea class="form-control" placeholder="Action" name="exception_actions[]"
+                                                rows="3"></textarea>
+                                        </div>
+                                        <div class="col-3">
+                                            <span>Element:</span>
+                                            <div class="element-result"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <div class="row row-add-exception-action">
+                        <div class="col d-flex justify-content-end">
+                            <a class="btn btn-info add-exception-action">Add Action</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--End Exception Card -->
+
+            <div class="row">
+                <div class="col d-flex justify-content-center">
+                    <button class="btn btn-primary" type="submit" style="min-width: 25%;"> Submit</button>
+                </div>
+            </div>
+        </form>
+
+    </div>
+</div>
+{%endblock%}
+
+{% block script %}
+<script>
+    $(document).ready(function () {
+        // Text Area Word Checker
+        //setup before functions
+        var typingTimer;                //timer identifier
+        var doneTypingInterval = 2000;  //time in ms (2 seconds)
+        //on keyup, start the countdown
+        $('.card-normal,.card-alternative,.card-exception').on('input','textarea',function () {
+            clearTimeout(typingTimer);
+            let content = $(this).val();
+            let th = $(this);
+
+            th.parent('div').siblings('div').find('.element-result').html(`<button class="btn btn-primary" type="button" disabled>
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    Processing...
+            </button>`);
+
+            if (content) {
+                typingTimer = setTimeout(function(){
+                    let found = [],          // an array to collect the strings that are found
+                        rxp = /{([^}]+)}/g, //regelar expresion ini string {pass} {word} =>[pass,word] 
+                        str = content,
+                        obj = {},
+                        curMatch,element,rest,id,value,page
+                        knownEl = ['page','input','button','radio', 'check_box','text_area','drop_list','help_text']
+
+                    while (curMatch = rxp.exec(str)) {
+                        try {
+                            [element, rest] = [curMatch[1].split('#')[0], curMatch[1].split('#')[1]]; // elName#id>value
+                            [id, value] = [rest.split('>')[0], rest.split('>')[1]];
+                            if(element !== "" && id !== "" && knownEl.includes(element)){
+                                if(element == 'page'){
+                                    page=id
+                                }
+                                obj = { "element": element, "id": id, "page":page, "value": value };
+                            }   
+                            found.push(obj);
+                        }
+                        catch (err) {
+                            alert(err);   
+                        }
+                    }
+                    if(found.length !== 0){
+                        let strFound = '<ul>'
+                        found.forEach(function(el,index){
+                            strFound += `<li>Element: ${el.element}, Id:${el.id}, value:${el.value}, Page:${el.page}</li>`
+                        });
+                        strFound += '</ul>'
+                        th.parent('div').siblings('div').find('.element-result').html(strFound);
+                    }else{
+                        th.parent('div').siblings('div').find('.element-result').html('<span>Element Not Found</span>');
+                    }
+                }, doneTypingInterval);
+            }else{
+                th.parent('div').siblings('div').find('.element-result').html('<span>Element Not Found</span>');
+            }
+        });
+
+
+        // Add Action
+        $('.card-normal').on('click', '.add-normal-action', function(e){
+            e.preventDefault();
+            $('.col-normal-scenario').append(
+                `
+                    <div class="row row-append-normal-action">
+                        <div class="col">
+                            <div class="row row-normal-input">
+                                <div class="col-1">
+                                    <small class="action-order">Action-1</small>
+                                </div>
+                                <div class="col-3">
+                                    <span>Role:</span>
+                                    <select class="form-select" name="normal_roles[]" aria-label="Default select example">
+                                        <option selected value="">-- Select Roles --</option>
+                                        <option value="user">User</option>
+                                        <option value="sistem">Sistem</option>
+                                    </select>
+                                </div>
+                                <div class="col-5">
+                                    <span>Action:</span>
+                                    <textarea class="form-control" placeholder="Action" name="normal_actions[]" rows="3"></textarea>
+                                </div>
+                                <div class="col-3">
+                                    <span>Element:</span>
+                                    <div class="element-result"></div>
+                                </div>
+                            </div>
+                            <div class="row row-remove-normal-action mb-3">
+                                <div class="col-12 d-flex justify-content-end">
+                                    <a class="btn btn-link remove-normal-action">Delete Action</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `
+            );
+            // // Update Index Action
+            Array.from(document.querySelectorAll(`.row-normal-scenario small.action-order`)).forEach(function (el, index) {
+                el.innerHTML = "Action- " + (index + 1);
+            });  
+        });
+        $('.card-alternative').on('click', '.add-alternative-action', function(e){
+            e.preventDefault();
+            $('.col-alternative-scenario').append(
+                `
+                    <div class="row row-append-alternative-action">
+                        <div class="col">
+                            <div class="row row-alternative-input">
+                                <div class="col-1">
+                                    <small class="action-order">Action-1</small>
+                                </div>
+                                <div class="col-3">
+                                    <span>Role:</span>
+                                    <select class="form-select" name="alternative_roles[]" aria-label="Default select example">
+                                        <option selected value="">-- Select Roles --</option>
+                                        <option value="user">User</option>
+                                        <option value="sistem">Sistem</option>
+                                    </select>
+                                </div>
+                                <div class="col-5">
+                                    <span>Action:</span>
+                                    <textarea class="form-control" placeholder="Action" name="alternative_actions[]" rows="3"></textarea>
+                                </div>
+                                <div class="col-3">
+                                    <span>Element:</span>
+                                    <div class="element-result"></div>
+                                </div>
+                            </div>
+                            <div class="row row-remove-alternative-action mb-3">
+                                <div class="col-12 d-flex justify-content-end">
+                                    <a class="btn btn-link remove-alternative-action">Delete Action</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `
+            );
+            // // Update Index Action
+            Array.from(document.querySelectorAll(`.row-alternative-scenario small.action-order`)).forEach(function (el, index) {
+                el.innerHTML = "Action- " + (index + 1);
+            });  
+        });
+        $('.card-exception').on('click', '.add-exception-action', function(e){
+            e.preventDefault();
+            $('.col-exception-scenario').append(
+                `
+                    <div class="row row-append-exception-action">
+                        <div class="col">
+                            <div class="row row-exception-input">
+                                <div class="col-1">
+                                    <small class="action-order">Action-1</small>
+                                </div>
+                                <div class="col-3">
+                                    <span>Role:</span>
+                                    <select class="form-select" name="exception_roles[]" aria-label="Default select example">
+                                        <option selected value="">-- Select Roles --</option>
+                                        <option value="user">User</option>
+                                        <option value="sistem">Sistem</option>
+                                    </select>
+                                </div>
+                                <div class="col-5">
+                                    <span>Action:</span>
+                                    <textarea class="form-control" placeholder="Action" name="exception_actions[]" rows="3"></textarea>
+                                </div>
+                                <div class="col-3">
+                                    <span>Element:</span>
+                                    <div class="element-result"></div>
+                                </div>
+                            </div>
+                            <div class="row row-remove-exception-action mb-3">
+                                <div class="col-12 d-flex justify-content-end">
+                                    <a class="btn btn-link remove-exception-action">Delete Item</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `
+            );
+            // // Update Index Action
+            Array.from(document.querySelectorAll(`.row-exception-scenario small.action-order`)).forEach(function (el, index) {
+                el.innerHTML = "Action- " + (index + 1);
+            });  
+        });
+        // End Add Action
+
+        // Remove Action
+        $('.card-normal').on('click', '.remove-normal-action', function (e) {
+            $(this).parent('div').parent('div').parent('div').parent('div').remove();
+            // // Update Index Action
+            Array.from(document.querySelectorAll(`.row-normal-scenario small.action-order`)).forEach(function (el, index) {
+                el.innerHTML = "Action- " + (index + 1);
+            });   
+        });
+        $('.card-alternative').on('click', '.remove-alternative-action', function (e) {
+            $(this).parent('div').parent('div').parent('div').parent('div').remove();
+            // // Update Index Action
+            Array.from(document.querySelectorAll(`.row-alternative-scenario small.action-order`)).forEach(function (el, index) {
+                el.innerHTML = "Action- " + (index + 1);
+            });   
+        });
+        $('.card-exception').on('click', '.remove-exception-action', function (e) {
+            $(this).parent('div').parent('div').parent('div').parent('div').remove();
+            // // Update Index Action
+            Array.from(document.querySelectorAll(`.row-exception-scenario small.action-order`)).forEach(function (el, index) {
+                el.innerHTML = "Action- " + (index + 1);
+            });   
+        });
+        // End Remove Action
+
+    });
+</script>
+{% endblock %}
