@@ -3,11 +3,16 @@ $(document).ready(function () {
     //setup before functions
     var typingTimer;                //timer identifier
     var doneTypingInterval = 2000;  //time in ms (2 seconds)
+    let sumEl = [],
+        knownEl = ['page', 'input', 'button', 'radio', 'check_box', 'text_area', 'drop_list', 'help_text'],
+        inPageNormal='',inPageAlternative='',inPageException='';
+
     //on keyup, start the countdown
     $('.card-normal,.card-alternative,.card-exception').on('input', 'textarea', function () {
         clearTimeout(typingTimer);
         let content = $(this).val();
         let th = $(this);
+        
 
         th.parent('div').siblings('div').find('.element-result').html(`<button class="btn btn-primary" type="button" disabled>
                 <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
@@ -20,20 +25,37 @@ $(document).ready(function () {
                     rxp = /{([^}]+)}/g, //regelar expresion ini string {pass} {word} =>[pass,word] 
                     str = content,
                     obj = {},
-                    curMatch, element, rest, id, value, page
-                knownEl = ['page', 'input', 'button', 'radio', 'check_box', 'text_area', 'drop_list', 'help_text']
+                    curMatch, element, rest, id, value,
+                    typeOfScenario = th.attr('typeOfScenario')
 
                 while (curMatch = rxp.exec(str)) {
                     try {
+                        
                         [element, rest] = [curMatch[1].split('#')[0], curMatch[1].split('#')[1]]; // elName#id>value
                         [id, value] = [rest.split('>')[0], rest.split('>')[1]];
                         if (element !== "" && id !== "" && knownEl.includes(element)) {
                             if (element == 'page') {
-                                page = id
+                                if (typeOfScenario == 'normal'){
+                                    inPageNormal = id
+                                } else if (typeOfScenario == 'alternative'){
+                                    inPageAlternative = id
+                                }else{
+                                    inPageException = id
+                                }
+                                obj = { 'element': element, 'id': id, 'inPage': null, 'value': value, 'salt':'', 'scenario': typeOfScenario };
+                            }else{
+                                if (typeOfScenario == 'normal') {
+                                    page = inPageNormal
+                                } else if (typeOfScenario == 'alternative') {
+                                    page = inPageAlternative
+                                } else {
+                                    page = inPageException
+                                }
+                                obj = { 'element': element, 'id': id, 'inPage': page, 'value': value, 'salt': '', 'scenario': typeOfScenario };
                             }
-                            obj = { "element": element, "id": id, "page": page, "value": value };
+                            found.push(obj);
+                        }else{
                         }
-                        found.push(obj);
                     }
                     catch (err) {
                         alert(err);
@@ -42,17 +64,93 @@ $(document).ready(function () {
                 if (found.length !== 0) {
                     let strFound = '<ul>'
                     found.forEach(function (el, index) {
-                        strFound += `<li>Element: ${el.element}, Id:${el.id}, value:${el.value}, Page:${el.page}</li>`
+                        strFound += `<li>Element: ${el.element}, Id:${el.id}, value:${el.value}, in page:${el.inPage}</li>`
                     });
                     strFound += '</ul>'
                     th.parent('div').siblings('div').find('.element-result').html(strFound);
+                    th.parent('div').siblings('div').find('input').attr('value', JSON.stringify(found));
                 } else {
                     th.parent('div').siblings('div').find('.element-result').html('<span>Element Not Found</span>');
+                    th.parent('div').siblings('div').find('input').attr('value', '');
                 }
+
+                // SumElement
+                // Kumpulin element dari semua scenario
+                sumEl = [];
+                sumEl = loadEl();
+                
             }, doneTypingInterval);
         } else {
             th.parent('div').siblings('div').find('.element-result').html('<span>Element Not Found</span>');
+            th.parent('div').siblings('div').find('input').attr('value', '');
         }
+    });
+    // End Text Area Word Checker
+
+
+
+    // Ketika form diSubmit
+    $('.form-useCaseScenario').on('submit', function(e){
+        e.preventDefault();
+        let csrf_token = $('input[name="csrfmiddlewaretoken"]').val(),
+            actor = $('input[name="actor"]').val(),
+            featureName = $('input[name="feature_name"]').val(),
+            featureDescription = $('input[name="feature_description"]').val(),
+            preCondition = $('input[name="pre_condition"]').val(),
+            postCondition = $('input[name="post_condition"]').val(),
+            actions = [], role, action, listElement,typeOfUCS, inputElement
+            objAction={};
+
+        $('.row-append-normal-action').each(function(index,el){
+            role = $(el).find('.select-role').val();
+            action = $(el).find('.input-action').val();
+            listElement = $(el).find('.element-result').html();
+            inputElement = $(el).find('.normal-input-element').val();
+            typeOfUCS = $(el).find('.input-action').attr('typeOfScenario');
+            objAction = { "role": role, 'action': action, 'listElement': listElement, 'inputElement': inputElement, 'typeOfUCS': typeOfUCS}
+            actions.push(objAction);
+        });
+        $('.row-append-alternative-action').each(function(index,el){
+            role = $(el).find('.select-role').val();
+            action = $(el).find('.input-action').val();
+            listElement = $(el).find('.element-result').html();
+            inputElement = $(el).find('.alternative-input-element').val();
+            typeOfUCS = $(el).find('.input-action').attr('typeOfScenario');
+            objAction = { "role": role, 'action': action, 'listElement': listElement, 'inputElement': inputElement, 'typeOfUCS': typeOfUCS}
+            actions.push(objAction);
+        });
+        $('.row-append-exception-action').each(function(index,el){
+            role = $(el).find('.select-role').val();
+            action = $(el).find('.input-action').val();
+            listElement = $(el).find('.element-result').html();
+            inputElement = $(el).find('.exception-input-element').val();
+            typeOfUCS = $(el).find('.input-action').attr('typeOfScenario');
+            objAction = {"role": role, 'action': action, 'listElement': listElement, 'inputElement':inputElement ,'typeOfUCS': typeOfUCS}
+            actions.push(objAction);
+        });
+
+
+        // Jalankan ajax
+        $.ajax({
+            method:'POST',
+            url:'/createUseCaseScenario/',
+            data:{
+                "actor" :actor,
+                "featureName" :featureName,
+                "featureDescription" :featureDescription,
+                "preCondition" :preCondition,
+                "postCondition" :postCondition,
+                "actions" : JSON.stringify(actions),
+                "sumEl":JSON.stringify(sumEl),
+                "csrfmiddlewaretoken":csrf_token},
+            success:function(response){
+                console.log('success');
+                console.log(response);
+            },
+            error: function (xhr, ajaxOptions, thrownError){
+                console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+            },
+        })
     });
 
 
@@ -62,6 +160,7 @@ $(document).ready(function () {
         $('.col-normal-scenario').append(
             `
                     <div class="row row-append-normal-action">
+                        <input type="hidden" value="normal" name="scenario_type[]">
                         <div class="col">
                             <div class="row row-normal-input">
                                 <div class="col-1">
@@ -69,7 +168,7 @@ $(document).ready(function () {
                                 </div>
                                 <div class="col-3">
                                     <span>Role:</span>
-                                    <select class="form-select" name="normal_roles[]" aria-label="Default select example">
+                                    <select class="form-select select-role" name="roles[]" aria-label="Default select example" required>
                                         <option selected value="">-- Select Roles --</option>
                                         <option value="user">User</option>
                                         <option value="sistem">Sistem</option>
@@ -77,11 +176,12 @@ $(document).ready(function () {
                                 </div>
                                 <div class="col-5">
                                     <span>Action:</span>
-                                    <textarea class="form-control" placeholder="Action" name="normal_actions[]" rows="3"></textarea>
+                                    <textarea class="form-control input-action" placeholder="Action" name="actions[]" rows="3" typeOfScenario="normal" required></textarea>
                                 </div>
                                 <div class="col-3">
                                     <span>Element:</span>
                                     <div class="element-result"></div>
+                                    <input type="hidden" name="elements[]" value="" class="normal-input-element">
                                 </div>
                             </div>
                             <div class="row row-remove-normal-action mb-3">
@@ -103,6 +203,7 @@ $(document).ready(function () {
         $('.col-alternative-scenario').append(
             `
                     <div class="row row-append-alternative-action">
+                        <input type="hidden" value="alternative" name="scenario_type[]">
                         <div class="col">
                             <div class="row row-alternative-input">
                                 <div class="col-1">
@@ -110,7 +211,7 @@ $(document).ready(function () {
                                 </div>
                                 <div class="col-3">
                                     <span>Role:</span>
-                                    <select class="form-select" name="alternative_roles[]" aria-label="Default select example">
+                                    <select class="form-select select-role" name="roles[]" aria-label="Default select example" required>
                                         <option selected value="">-- Select Roles --</option>
                                         <option value="user">User</option>
                                         <option value="sistem">Sistem</option>
@@ -118,11 +219,12 @@ $(document).ready(function () {
                                 </div>
                                 <div class="col-5">
                                     <span>Action:</span>
-                                    <textarea class="form-control" placeholder="Action" name="alternative_actions[]" rows="3"></textarea>
+                                    <textarea class="form-control input-action" placeholder="Action" name="actions[]" rows="3" typeOfScenario="alternative" required></textarea>
                                 </div>
                                 <div class="col-3">
                                     <span>Element:</span>
                                     <div class="element-result"></div>
+                                    <input type="hidden" name="elements[]" value="" class="alternative-input-element">
                                 </div>
                             </div>
                             <div class="row row-remove-alternative-action mb-3">
@@ -144,6 +246,7 @@ $(document).ready(function () {
         $('.col-exception-scenario').append(
             `
                     <div class="row row-append-exception-action">
+                        <input type="hidden" value="exception" name="scenario_type[]">
                         <div class="col">
                             <div class="row row-exception-input">
                                 <div class="col-1">
@@ -151,7 +254,7 @@ $(document).ready(function () {
                                 </div>
                                 <div class="col-3">
                                     <span>Role:</span>
-                                    <select class="form-select" name="exception_roles[]" aria-label="Default select example">
+                                    <select class="form-select select-role" name="roles[]" aria-label="Default select example" required>
                                         <option selected value="">-- Select Roles --</option>
                                         <option value="user">User</option>
                                         <option value="sistem">Sistem</option>
@@ -159,11 +262,12 @@ $(document).ready(function () {
                                 </div>
                                 <div class="col-5">
                                     <span>Action:</span>
-                                    <textarea class="form-control" placeholder="Action" name="exception_actions[]" rows="3"></textarea>
+                                    <textarea class="form-control input-action" placeholder="Action" name="actions[]" rows="3" typeOfScenario="exception" required></textarea>
                                 </div>
                                 <div class="col-3">
                                     <span>Element:</span>
                                     <div class="element-result"></div>
+                                    <input type="hidden" name="elements[]" value="" class="exception-input-element">
                                 </div>
                             </div>
                             <div class="row row-remove-exception-action mb-3">
@@ -185,6 +289,11 @@ $(document).ready(function () {
     // Remove Action
     $('.card-normal').on('click', '.remove-normal-action', function (e) {
         $(this).parent('div').parent('div').parent('div').parent('div').remove();
+
+        // Update El
+        sumEl = [];
+        sumEl = loadEl();
+
         // // Update Index Action
         Array.from(document.querySelectorAll(`.row-normal-scenario small.action-order`)).forEach(function (el, index) {
             el.innerHTML = "Action- " + (index + 1);
@@ -192,6 +301,11 @@ $(document).ready(function () {
     });
     $('.card-alternative').on('click', '.remove-alternative-action', function (e) {
         $(this).parent('div').parent('div').parent('div').parent('div').remove();
+
+        // Update El
+        sumEl = [];
+        sumEl = loadEl();
+
         // // Update Index Action
         Array.from(document.querySelectorAll(`.row-alternative-scenario small.action-order`)).forEach(function (el, index) {
             el.innerHTML = "Action- " + (index + 1);
@@ -199,11 +313,77 @@ $(document).ready(function () {
     });
     $('.card-exception').on('click', '.remove-exception-action', function (e) {
         $(this).parent('div').parent('div').parent('div').parent('div').remove();
+
+        // Update El
+        sumEl = [];
+        sumEl = loadEl();
+
         // // Update Index Action
         Array.from(document.querySelectorAll(`.row-exception-scenario small.action-order`)).forEach(function (el, index) {
             el.innerHTML = "Action- " + (index + 1);
         });
     });
     // End Remove Action
+
+    // Load Element
+    function loadEl() {
+        let normalEl = [],
+            alternativeEl = [],
+            exceptionEl = [],
+            kumpulanId = []
+
+        $('.normal-input-element').each(function (index, el) {
+            if ($(el).val() !== '') {
+                JSON.parse($(el).val()).forEach(function (obj, id) {
+                    if (normalEl.length == 0) {
+                        kumpulanId.push(obj.id);
+                        normalEl.push(obj);
+                    } else {
+                        if (kumpulanId.indexOf(obj.id) == -1) {
+                            kumpulanId.push(obj.id);
+                            normalEl.push(obj);
+                        }
+                    }
+                });
+            }
+        });
+
+        kumpulanId = [];
+        $('.alternative-input-element').each(function (index, el) {
+            if ($(el).val() !== '') {
+                JSON.parse($(el).val()).forEach(function (obj, id) {
+                    if (alternativeEl.length == 0) {
+                        kumpulanId.push(obj.id);
+                        alternativeEl.push(obj);
+                    } else {
+                        if (kumpulanId.indexOf(obj.id) == -1) {
+                            kumpulanId.push(obj.id);
+                            alternativeEl.push(obj);
+                        }
+                    }
+                });
+            }
+        });
+
+        kumpulanId = [];
+        $('.exception-input-element').each(function (index, el) {
+            if ($(el).val() !== '') {
+                JSON.parse($(el).val()).forEach(function (obj, id) {
+                    if (exceptionEl.length == 0) {
+                        kumpulanId.push(obj.id);
+                        exceptionEl.push(obj);
+                    } else {
+                        if (kumpulanId.indexOf(obj.id) == -1) {
+                            kumpulanId.push(obj.id);
+                            exceptionEl.push(obj);
+                        }
+                    }
+                });
+            }
+        });
+
+        return normalEl.concat(alternativeEl, exceptionEl)
+    }
+    // End Load Element
 
 });

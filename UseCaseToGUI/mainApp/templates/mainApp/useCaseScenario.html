@@ -6,7 +6,7 @@
 <div class="row row-form-sistem" style="margin-bottom: 70px;">
     <div class="col">
         <!-- Form -->
-        <form action="" method="post">
+        <form class="form-useCaseScenario" action="" method="post">
             {% csrf_token %}
             <!-- Description Card -->
             <div class="card shadow mb-4 card-description">
@@ -31,7 +31,7 @@
                             <span>Nama Fitur</span>
                         </div>
                         <div class="col-9">
-                            <input type="text" class="form-control" placeholder="Nama Fitur" aria-describedby="basic-addon1" required>
+                            <input type="text" class="form-control" name="feature_name" placeholder="Nama Fitur" aria-describedby="basic-addon1" required>
                         </div>
                     </div>
     
@@ -40,7 +40,7 @@
                             <span>Deskripsi Fitur</span>
                         </div>
                         <div class="col-9">
-                            <input type="text" class="form-control" placeholder="Deskripsi Fitur" aria-describedby="basic-addon1" name="feature_description" required>
+                            <input type="text" class="form-control" name="feature_description" placeholder="Deskripsi Fitur" aria-describedby="basic-addon1" required>
                         </div>
                     </div>
     
@@ -78,6 +78,7 @@
                         </div>
                         <div class="col-10 col-normal-scenario">
                             <div class="row row-append-normal-action">
+                                <input type="hidden" value="normal" name="scenario_type[]">
                                 <div class="col">
                                     <div class="row row-normal-input mb-3">
                                         <div class="col-1">
@@ -85,7 +86,7 @@
                                         </div>
                                         <div class="col-3">
                                             <span>Role:</span>
-                                            <select class="form-select" name="normal_roles[]" aria-label="Default select example" required>
+                                            <select class="form-select select-role" name="roles[]" aria-label="Default select example" required>
                                                 <option selected value="">-- Select Roles --</option>
                                                 <option value="user">User</option>
                                                 <option value="sistem">Sistem</option>
@@ -93,11 +94,12 @@
                                         </div>
                                         <div class="col-5">
                                             <span>Action:</span>
-                                            <textarea class="form-control" placeholder="Action" name="normal_actions[]" rows="3" required></textarea>
+                                            <textarea class="form-control input-action" placeholder="Action" name="actions[]" rows="3" required typeOfScenario="normal" required></textarea>
                                         </div>
                                         <div class="col-3">
                                             <span>Element:</span>
                                             <div class="element-result"></div>
+                                            <input type="hidden" value="" name="elements[]" class="normal-input-element">
                                         </div>
                                     </div>
                                 </div>
@@ -126,6 +128,7 @@
                         </div>
                         <div class="col-10 col-alternative-scenario">
                             <div class="row row-append-alternative-action">
+                                <input type="hidden" value="alternative" name="scenario_type[]">
                                 <div class="col">
                                     <div class="row row-alternative-input mb-3">
                                         <div class="col-1">
@@ -133,7 +136,7 @@
                                         </div>
                                         <div class="col-3">
                                             <span>Role:</span>
-                                            <select class="form-select" name="alternative_roles[]" aria-label="Default select example">
+                                            <select class="form-select select-role" name="roles[]" aria-label="Default select example" required>
                                                 <option selected value="">-- Select Roles --</option>
                                                 <option value="user">User</option>
                                                 <option value="sistem">Sistem</option>
@@ -141,12 +144,13 @@
                                         </div>
                                         <div class="col-5">
                                             <span>Action:</span>
-                                            <textarea class="form-control" placeholder="Action" name="alternative_actions[]"
-                                                rows="3"></textarea>
+                                            <textarea class="form-control input-action" placeholder="Action" name="actions[]"
+                                                rows="3" typeOfScenario="alternative" required></textarea>
                                         </div>
                                         <div class="col-3">
                                             <span>Element:</span>
                                             <div class="element-result"></div>
+                                            <input type="hidden" value="" name="elements[]" class="alternative-input-element">
                                         </div>
                                     </div>
                                 </div>
@@ -177,12 +181,13 @@
                             <div class="row row-append-exception-action">
                                 <div class="col">
                                     <div class="row row-exception-input mb-3">
+                                        <input type="hidden" value="exception" name="scenario_type[]">
                                         <div class="col-1">
                                             <small class="action-order">Action-1</small>
                                         </div>
                                         <div class="col-3">
                                             <span>Role:</span>
-                                            <select class="form-select" name="exception_roles[]" aria-label="Default select example">
+                                            <select class="form-select select-role" name="roles[]" aria-label="Default select example" required>
                                                 <option selected value="">-- Select Roles --</option>
                                                 <option value="user">User</option>
                                                 <option value="sistem">Sistem</option>
@@ -190,12 +195,13 @@
                                         </div>
                                         <div class="col-5">
                                             <span>Action:</span>
-                                            <textarea class="form-control" placeholder="Action" name="exception_actions[]"
-                                                rows="3"></textarea>
+                                            <textarea class="form-control input-action" placeholder="Action" name="actions[]"
+                                                rows="3" typeOfScenario="exception" required></textarea>
                                         </div>
                                         <div class="col-3">
                                             <span>Element:</span>
                                             <div class="element-result"></div>
+                                            <input type="hidden" name="elements[]" value="" class="exception-input-element">
                                         </div>
                                     </div>
                                 </div>
