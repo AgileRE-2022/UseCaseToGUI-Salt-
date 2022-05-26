@@ -3,6 +3,7 @@ import json
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm
+from django.template import Context, Template
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -62,16 +63,15 @@ def home(request):
 
 @login_required(login_url='login')
 def useCaseScenario(request):
-    context={}
     return render(request,'mainApp/useCaseScenario.html')
 
 @login_required(login_url='login')
 def createUseCaseScenario(request):
     if request.method == "POST":
-        # Create usecasescenario model
-        ucs = UseCaseScenario.objects.create(actor=request.POST['actor'], feature=request.POST['featureName'], feature_description=request.POST['featureDescription'], pre_condition=request.POST['preCondition'], post_condition=request.POST['postCondition'], sum_element=request.POST['sumEl'])
+        # Create usecasescenario object
+        ucs = UseCaseScenario.objects.create(actor=request.POST['actor'], feature=request.POST['featureName'], feature_description=request.POST['featureDescription'], pre_condition=request.POST['preCondition'], post_condition=request.POST['postCondition'], elements=request.POST['sumEl'])
         
-        # Craete action
+        # Craete action object
         actions = json.loads(request.POST['actions'])
         for el in actions :
             role = el['role']
@@ -87,8 +87,24 @@ def createUseCaseScenario(request):
 
 
 @login_required(login_url='login')
-def layoutElement(request):
+def layoutElement(request,pk):
+    ucs = UseCaseScenario.objects.get(id=pk)
+    context={"ucs":ucs}
+    return render(request,'mainApp/layoutElement.html',context)
+
+@login_required(login_url='login')
+def result(request,pk):
+    ucs = UseCaseScenario.objects.get(id=pk)
+    context={"ucs":ucs}
+    return render(request,'mainApp/result.html',context)
+
+@login_required(login_url='login')
+def updateUCSSalt(request,pk):
     context={}
-    return render(request,'mainApp/layoutElement.html')
+    if request.method == "POST":
+        UseCaseScenario.objects.filter(pk=pk).update(salt=request.POST['salt'])
+        return JsonResponse({"success":'success'})
+
+
 
 

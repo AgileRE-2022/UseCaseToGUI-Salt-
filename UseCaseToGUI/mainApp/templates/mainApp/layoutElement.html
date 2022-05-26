@@ -5,7 +5,7 @@
 {% block css %}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.2/font/bootstrap-icons.css">
 <style>
-    .col-status:nth-child(even){
+    .col-draggable:nth-child(even){
         background-color: rgb(243, 243, 243);
     }
     .todo{
@@ -30,26 +30,129 @@
 {% block content %}
 <div class="layout-container">
     <h4 class="mb-4">Layout Element</h3>
-    <div class="row row-status">
-        <div class="col-4 col-status" style="height: 1000px;">
-            <h5>No Status</h5>
-            <div class="todo position-relative d-flex justify-content-between" draggable="true">
-                <span>Buy Pizza</span><span class="conf" style="display: none;"><i class="bi-gear"></i></span>
-            </div>
-            <div class="todo position-relative d-flex justify-content-between" draggable="true">
-                <span>Buy Melon</span> <span class="conf" style="display: none;"><i class="bi-gear"></i></span>
-            </div>
-        </div>
-        <div class="col-4 col-status status-sorted-element">
-            <h5>Sorted Element</h5>
-        </div>
-        <div class="col-4 col-conf">
-            <h5>Configuration Element</h5>
+    <div class="row row-button mb-2">
+        <div class="col-6"></div>
+        <div class="col-6 d-flex justify-content-end">
+            <button class="btn btn-primary btn-convert">Convert</button>
         </div>
     </div>
+    <div class="row row-status">
+        <div class="col-6">
+            <h5>No Status</h5>
+        </div>
+        <div class="col-6">
+            <h5>Sorted Element</h5>
+        </div>
+    </div>
+    <div class="row row-draggable">
+        <div class="col-6 col-draggable col-unsorted-element">
+        </div>
+        <div class="col-6 col-draggable col-sorted-element">
+        </div>
+        <!-- <div class="col-4 col-result">
+            <img class="result-gui" uml=''>
+        </div> -->
+    </div>
 </div>
+{% csrf_token %}
+
 {% endblock %}
 
 {% block script %}
+
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"integrity="sha256-T0Vest3yCU7pafRw9r+settMBX6JkKN06dqBnpQ8d30=" crossorigin="anonymous"></script>
+
+<script class="jq-plant-uml" type="text/javascript" src="{% static '/js/plantuml/jquery_plantuml.js' %}"></script>
+
+
+<script>
+    $(document).ready(function () {
+
+        let ucsElements = JSON.parse('{{ ucs.elements|escapejs }}');
+
+        ucsElements.forEach(function(el,id){
+            elementType = el.element;
+            classScenarioType = (el.scenario == 'normal') ? 'badge bg-primary' : ((el.scenario == 'alternative') ? 'badge bg-secondary' : 'badge bg-danger');
+            if(el.sorted == undefined || el.sorted == false){
+                el.sorted = false;
+                el.sorted_index = null;
+                $('.col-unsorted-element').append(
+                    ` 
+                    <div class="todo position-relative mb-3" draggable="true" data-element='${JSON.stringify(el)}'>
+                        <span class="span-name">${el.id}</span>
+                        <small class="element-type" style="margin-right:10px;">(${elementType})</small>
+                        <span class="conf float-end"><i class="bi-gear"></i></span>
+                        <small class="float-end scenario-type ${classScenarioType}" style="margin-right:10px;">${el.scenario}</small>
+                        <small class="float-end scenario-type" style="margin-right:10px;">${el.inPage} page</small>
+                    </div>`
+                )
+                
+            }
+        })
+
+        // collect salt from element
+        $('.btn-convert').on('click', function (e) {
+            let salt = ''
+            salt +=
+                `@startsalt\n{\n`
+            $('.col-sorted-element').find('.todo').each(function (id, el) {
+                salt += $(this).data('element').salt
+                salt += `\n.\n`
+            });
+            salt += `}\n@endsalt`
+
+            // Ajax update ucs object with salt
+            let csrf_token = $('input[name="csrfmiddlewaretoken"]').val()
+            $.ajax({
+                method: 'post',
+                url: '/updateUCSSalt/{{ ucs.id }}/',
+                data: {
+                    "ucsId": '{{ ucs.id }}',
+                    'salt': salt,
+                    "csrfmiddlewaretoken": csrf_token
+                },
+                success: function (response) {
+                    window.location.href = '/result/{{ ucs.id }}/'
+                    console.log(response);
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+                },
+            })
+
+            // window.location.href = ''
+        });
+
+
+        // Jquery sortable
+        $(".todo").click(function () {
+            $(this).toggleClass("selected");
+        });
+
+        $(".col-draggable").sortable({
+            connectWith: ".col-draggable",
+            start: function (e, info) {
+                info.item.siblings(".selected").appendTo(info.item);
+            },
+            stop: function (e, info) {
+                info.item.after(info.item.find(".todo"))
+                col_draggable = info.item.parent('div')
+
+                $('.col-sorted-element').find('.todo').each(function (index, el) {
+                    $(this).data('element').sorted = true
+                    $(this).data('element').sorted_index = index + 1
+                });
+                $('.col-unsorted-element').find('.todo').each(function (index, el) {
+                    $(this).data('element').sorted = false
+                    $(this).data('element').sorted_index = null
+                });
+            }
+        });
+        //End Jquery sortable
+    });
+</script>
 <script src="{% static '/js/layoutElement.js' %}"></script>
 {% endblock %}

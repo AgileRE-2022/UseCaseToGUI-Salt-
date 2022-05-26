@@ -11,7 +11,10 @@ urlpatterns = [
     path('useCaseScenario/', views.useCaseScenario , name="useCaseScenario"),
     path('createUseCaseScenario/', views.createUseCaseScenario, name="createUseCaseScenario"),
     
-    path('layoutElement/', views.layoutElement , name="layoutElement"),
+    path('layoutElement/<str:pk>/', views.layoutElement , name="layoutElement"),
+
+    path('result/<str:pk>/', views.result, name="result"),
+    path('updateUCSSalt/<str:pk>/', views.updateUCSSalt, name="updateUCSSalt"),
 
 
 

@@ -26,7 +26,8 @@ $(document).ready(function () {
                     str = content,
                     obj = {},
                     curMatch, element, rest, id, value,
-                    typeOfScenario = th.attr('typeOfScenario')
+                    typeOfScenario = th.attr('typeOfScenario'),
+                    salt
 
                 while (curMatch = rxp.exec(str)) {
                     try {
@@ -34,6 +35,9 @@ $(document).ready(function () {
                         [element, rest] = [curMatch[1].split('#')[0], curMatch[1].split('#')[1]]; // elName#id>value
                         [id, value] = [rest.split('>')[0], rest.split('>')[1]];
                         if (element !== "" && id !== "" && knownEl.includes(element)) {
+                            
+                            salt = saltElement(element, id, value)
+
                             if (element == 'page') {
                                 if (typeOfScenario == 'normal'){
                                     inPageNormal = id
@@ -42,7 +46,8 @@ $(document).ready(function () {
                                 }else{
                                     inPageException = id
                                 }
-                                obj = { 'element': element, 'id': id, 'inPage': null, 'value': value, 'salt':'', 'scenario': typeOfScenario };
+                                
+                                obj = { 'element': element, 'id': id, 'inPage': null, 'value': value, 'salt':salt, 'scenario': typeOfScenario };
                             }else{
                                 if (typeOfScenario == 'normal') {
                                     page = inPageNormal
@@ -51,7 +56,7 @@ $(document).ready(function () {
                                 } else {
                                     page = inPageException
                                 }
-                                obj = { 'element': element, 'id': id, 'inPage': page, 'value': value, 'salt': '', 'scenario': typeOfScenario };
+                                obj = { 'element': element, 'id': id, 'inPage': page, 'value': value, 'salt':salt, 'scenario': typeOfScenario };
                             }
                             found.push(obj);
                         }else{
@@ -86,6 +91,66 @@ $(document).ready(function () {
         }
     });
     // End Text Area Word Checker
+
+    function saltElement(element,id,value){
+        // ['page', 'input', 'button', 'radio', 'check_box', 'text_area', 'drop_list', 'help_text']
+        let salt = ``
+        if(element == 'page'){
+            if (value !== undefined){
+                salt += `{<size:20>${value}</size>}`
+            }else{
+                salt += `{<size:20>undefined</size>}`
+            }
+        }else if (element == 'input'){
+            if(value !== undefined){
+                salt += `{\"${value}\"}`
+            }else{
+                salt += `{\"undefined\"}`
+            }
+        }else if (element == 'button'){
+            if(value !== undefined){
+                salt += `{[${value}]}`
+            }else{
+                salt += `{\[undefined\]}`
+            }
+        }else if (element == 'radio'){
+            if(value !== undefined){
+                salt += `{() ${value}}`
+            }else{
+                salt += `{(undefined)}`
+            }
+        }else if (element == 'check_box'){
+            if (value !== undefined) {
+                salt += `{[] ${value}}`
+            } else {
+                salt += `{[undefined]}`
+            }
+        }
+        else if (element == 'drop_list') {
+            if (value !== undefined) {
+                salt += `{^${value}^}`
+            } else {
+                salt += `{^undefined^}`
+            }
+        }else if (element == 'text_area'){
+            if (value !== undefined){
+                salt += 
+                `{+\n${value}\n.\n"                         "\n}`
+            }else {
+                salt +=
+                    `{+\nundefined\n.\n"                         "\n}`
+            }
+        }else if(element == 'help_text'){
+            if(value !== undefined){
+                salt += `{<size:10>${ value }</size>}`
+            }else{
+                salt += `{<size:10>undefined</size>}`
+            }
+        }else{
+            salt += '{}'
+        }
+        return salt
+    }
 
 
 
