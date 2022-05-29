@@ -9,11 +9,12 @@ class UseCaseScenario(models.Model):
     feature_description = models.CharField(max_length=200,null=True)
     pre_condition = models.CharField(max_length=200,null=True)
     post_condition = models.CharField(max_length=200,null=True)
-    elements = models.TextField(null=True)
-    normal_sorted_element = models.TextField(null=True)
-    alternative_sorted_element = models.TextField(null=True)
-    exception_sorted_element = models.TextField(null=True)
-    salt = models.TextField(null=True)
+    normal_element = models.TextField(null=True)
+    alternative_element = models.TextField(null=True)
+    exception_element = models.TextField(null=True)
+    normal_salt = models.TextField(null=True)
+    alternative_salt = models.TextField(null=True)
+    exception_salt = models.TextField(null=True)
 
 class Action(models.Model):
     use_case_scenario = models.ForeignKey(UseCaseScenario, null=True, on_delete=models.SET_NULL)

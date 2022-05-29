@@ -46,8 +46,7 @@ $(document).ready(function () {
                                 }else{
                                     inPageException = id
                                 }
-                                
-                                obj = { 'element': element, 'id': id, 'inPage': null, 'value': value, 'salt':salt, 'scenario': typeOfScenario };
+                                obj = { 'element': element, 'id': id, 'inPage': null, 'value': value, 'salt': salt, 'scenario': typeOfScenario, 'sorted': false, 'sorted_index': null, 'label': '', 'checked': false };
                             }else{
                                 if (typeOfScenario == 'normal') {
                                     page = inPageNormal
@@ -56,7 +55,7 @@ $(document).ready(function () {
                                 } else {
                                     page = inPageException
                                 }
-                                obj = { 'element': element, 'id': id, 'inPage': page, 'value': value, 'salt':salt, 'scenario': typeOfScenario };
+                                obj = { 'element': element, 'id': id, 'inPage': page, 'value': value, 'salt': salt, 'scenario': typeOfScenario, 'sorted': false, 'sorted_index': null, 'label':'', 'checked':false };
                             }
                             found.push(obj);
                         }else{
@@ -135,7 +134,7 @@ $(document).ready(function () {
         }else if (element == 'text_area'){
             if (value !== undefined){
                 salt += 
-                `{+\n${value}\n.\n"                         "\n}`
+                    `{+\n${value}\n.\n"                         "\n}`
             }else {
                 salt +=
                     `{+\nundefined\n.\n"                         "\n}`

@@ -1,14 +1,21 @@
+{% extends 'mainApp/main.html' %}
+
 {% load static %}
 
-<html>
 
-<head>
-</head>
-
+{% block content %}
 <body>
-    <img uml='{{ ucs.salt }}'>
-</body>
-        <script type="text/javascript" src="{% static '/js/plantuml/jquery.js' %}"></script>
-        <script type="text/javascript" src="{% static '/js/plantuml/jquery_plantuml.js' %}"></script>
-        <!-- <script type="text/javascript" src="{% static '/js/plantuml/rawdeflate.js' %}"></script> -->
-</html>
+    <div class="row mb-3">
+        <div class="col">
+            <img uml='{{ ucsSalt }}'>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <a href="/layoutElement/{{ scenarioType }}/{{ ucsId }}/" class="btn btn-primary" role="button">Layout Element</a>
+        </div>
+    </div>
+    <script type="text/javascript" src="{% static '/js/plantuml/jquery.js' %}"></script>
+    <script type="text/javascript" src="{% static '/js/plantuml/jquery_plantuml.js' %}"></script>
+    <!-- <script type="text/javascript" src="{% static '/js/plantuml/rawdeflate.js' %}"></script> -->
+{% endblock %}

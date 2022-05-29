@@ -1,0 +1,55 @@
+{% extends 'mainApp/main.html' %}
+
+{% block content %}
+
+<div class="row row-datatable">
+    <div class="col">
+        <div class="card shadow mb-4">
+            <!-- Card Header - Dropdown -->
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">List Data Sistem</h6>
+            </div>
+            <!-- Card Body -->
+            <div class="card-body">
+                <!-- button create use case scenario -->
+                <a href="/useCaseScenario/" role="button" class="btn btn-primary mb-3">Create Use Case Scenario</a>
+
+                <table id="dataTable" class="table table-striped table-bordered" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Nama Fitur</th>
+                            <th>Deskripsi Fitur</th>
+                            <th>Date Created</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ucs in allUcs %}
+                        <tr>
+                            <td>{{ ucs.id }}</td>
+                            <td>{{ ucs.feature }}</td>
+                            <td>{{ ucs.feature_description }}</td>
+                            <td>{{ ucs.date_created }}</td>
+                            <td> 
+                                <a href="" role="button" class="btn btn-warning">Edit</a>
+                                <a href="" role="button" class="btn btn-info">Conf</a>
+                                <a href="" role="button" class="btn btn-danger">Delete</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+    $(document).ready(function () {
+        $('#dataTable').DataTable();
+    });
+</script>
+{% endblock %}

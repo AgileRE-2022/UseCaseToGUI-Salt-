@@ -1,3 +1,4 @@
+from multiprocessing import context
 from django.http import JsonResponse
 import json
 from django.http import HttpResponse
@@ -69,7 +70,7 @@ def useCaseScenario(request):
 def createUseCaseScenario(request):
     if request.method == "POST":
         # Create usecasescenario object
-        ucs = UseCaseScenario.objects.create(actor=request.POST['actor'], feature=request.POST['featureName'], feature_description=request.POST['featureDescription'], pre_condition=request.POST['preCondition'], post_condition=request.POST['postCondition'], elements=request.POST['sumEl'])
+        ucs = UseCaseScenario.objects.create(actor=request.POST['actor'], feature=request.POST['featureName'], feature_description=request.POST['featureDescription'], pre_condition=request.POST['preCondition'], post_condition=request.POST['postCondition'], normal_element=request.POST['sumEl'], alternative_element=request.POST['sumEl'], exception_element=request.POST['sumEl'])
         
         # Craete action object
         actions = json.loads(request.POST['actions'])
@@ -85,24 +86,43 @@ def createUseCaseScenario(request):
         
         return JsonResponse({"success":"success"})
 
+def showUseCaseScenario(request):
+    allUcs = UseCaseScenario.objects.order_by('-id').all()
+    context={"allUcs":allUcs}
+    return render(request,'mainApp/showUseCaseScenario.html',context)
+
 
 @login_required(login_url='login')
-def layoutElement(request,pk):
+def layoutElement(request,scenarioType,pk):
     ucs = UseCaseScenario.objects.get(id=pk)
-    context={"ucs":ucs}
+    context={"ucs":ucs, "scenarioType":scenarioType}
     return render(request,'mainApp/layoutElement.html',context)
 
-@login_required(login_url='login')
-def result(request,pk):
-    ucs = UseCaseScenario.objects.get(id=pk)
-    context={"ucs":ucs}
-    return render(request,'mainApp/result.html',context)
 
 @login_required(login_url='login')
-def updateUCSSalt(request,pk):
+def result(request,scenarioType,pk):
+    ucs = UseCaseScenario.objects.get(id=pk)
+    if(scenarioType== 'normal'):
+        context={"ucsSalt":ucs.normal_salt,"ucsId":pk,"scenarioType":scenarioType}
+    elif(scenarioType=='alternative'):
+        context={"ucsSalt":ucs.alternative_salt,"ucsId":pk,"scenarioType":scenarioType}
+    elif(scenarioType=='exception'):
+        context={"ucsSalt":ucs.exception_salt,"ucsId":pk,"scenarioType":scenarioType}
+
+    return render(request,'mainApp/result.html',context)
+
+        
+@login_required(login_url='login')
+def updateUCS(request,pk):
     context={}
     if request.method == "POST":
-        UseCaseScenario.objects.filter(pk=pk).update(salt=request.POST['salt'])
+        if(request.POST['scenarioType'] == 'normal'):
+            UseCaseScenario.objects.filter(pk=pk).update(normal_element=request.POST['ucsElement'],normal_salt=request.POST['ucsSalt'])
+        elif(request.POST['scenarioType'] == 'alternative'):
+            UseCaseScenario.objects.filter(pk=pk).update(alternative_element=request.POST['ucsElement'],alternative_salt=request.POST['ucsSalt'])
+        else:
+            UseCaseScenario.objects.filter(pk=pk).update(exception_element=request.POST['ucsElement'],exception_salt=request.POST['ucsSalt'])
+        
         return JsonResponse({"success":'success'})
 
 

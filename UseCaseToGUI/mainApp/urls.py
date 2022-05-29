@@ -8,13 +8,16 @@ urlpatterns = [
     path('login/', views.loginPage , name="login"),
     path('logout/', views.logoutUser , name="logout"),
 
+    path('showUseCaseScenario/', views.showUseCaseScenario , name="showUseCaseScenario"),
+
     path('useCaseScenario/', views.useCaseScenario , name="useCaseScenario"),
+
     path('createUseCaseScenario/', views.createUseCaseScenario, name="createUseCaseScenario"),
     
-    path('layoutElement/<str:pk>/', views.layoutElement , name="layoutElement"),
+    path('layoutElement/<str:scenarioType>/<str:pk>/', views.layoutElement , name="layoutElement"),
 
-    path('result/<str:pk>/', views.result, name="result"),
-    path('updateUCSSalt/<str:pk>/', views.updateUCSSalt, name="updateUCSSalt"),
+    path('result/<str:scenarioType>/<str:pk>/', views.result, name="result"),
+    path('updateUCS/<str:pk>/', views.updateUCS, name="updateUCS"),
 
 
 

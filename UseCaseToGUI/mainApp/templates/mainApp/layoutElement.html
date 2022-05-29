@@ -33,7 +33,8 @@
     <div class="row row-button mb-2">
         <div class="col-6"></div>
         <div class="col-6 d-flex justify-content-end">
-            <button class="btn btn-primary btn-convert">Convert</button>
+            <button class="btn btn-info btn-generate" style="margin-right: 10px;">Generate</button>
+            <button class="btn btn-primary btn-save">Save</button>
         </div>
     </div>
     <div class="row row-status">
@@ -49,9 +50,9 @@
         </div>
         <div class="col-6 col-draggable col-sorted-element">
         </div>
-        <!-- <div class="col-4 col-result">
-            <img class="result-gui" uml=''>
-        </div> -->
+    </div>
+    <div class="section-modal">
+
     </div>
 </div>
 {% csrf_token %}
@@ -71,9 +72,42 @@
 <script>
     $(document).ready(function () {
 
-        let ucsElements = JSON.parse('{{ ucs.elements|escapejs }}');
+        let ucsElements,
+            scenarioType = '{{ scenarioType }}'
+        
+        if(scenarioType == 'normal'){
+            ucsElements = JSON.parse('{{ ucs.normal_element|escapejs }}');
+        }
+        if(scenarioType == 'alternative'){
+            ucsElements = JSON.parse('{{ ucs.alternative_element|escapejs }}');
+        }
+        if(scenarioType == 'exception'){
+            ucsElements = JSON.parse('{{ ucs.exception_element|escapejs }}');
+        }
 
-        ucsElements.forEach(function(el,id){
+        // conf element
+        // Inisiasi element pada col
+
+        // Pisah sorted el dan unserted el
+        let sortedEl=[], unsortedEl=[]
+        ucsElements.forEach(function (el, index) {
+            if(el.sorted == false){
+                unsortedEl.push(el)
+            }else{
+                sortedEl.push(el)
+            }
+        })
+
+        // urutkan sortedEl berdasarkan sorted index
+        
+        sortedEl.sort(
+                function(a, b){
+                    return a.sorted_index - b.sorted_index;
+                }
+        ) 
+        
+        // Tempatkan unsorted el pada col unsorted el
+        unsortedEl.forEach(function(el,index){
             elementType = el.element;
             classScenarioType = (el.scenario == 'normal') ? 'badge bg-primary' : ((el.scenario == 'alternative') ? 'badge bg-secondary' : 'badge bg-danger');
             if(el.sorted == undefined || el.sorted == false){
@@ -84,75 +118,355 @@
                     <div class="todo position-relative mb-3" draggable="true" data-element='${JSON.stringify(el)}'>
                         <span class="span-name">${el.id}</span>
                         <small class="element-type" style="margin-right:10px;">(${elementType})</small>
-                        <span class="conf float-end"><i class="bi-gear"></i></span>
+                        <span class="conf float-end" data-bs-toggle="modal" data-bs-target="#${el.id}-${index}"><i class="bi-gear"></i></span>
                         <small class="float-end scenario-type ${classScenarioType}" style="margin-right:10px;">${el.scenario}</small>
                         <small class="float-end scenario-type" style="margin-right:10px;">${el.inPage} page</small>
+                        ${generateModal(el,index)}
                     </div>`
                 )
-                
+                $('.section-modal').append(
+                    
+                )
             }
         })
 
-        // collect salt from element
-        $('.btn-convert').on('click', function (e) {
-            let salt = ''
-            salt +=
+        // Tempatkan sorted el pada col sorted el
+        sortedEl.forEach(function(el,index){
+            elementType = el.element;
+            classScenarioType = (el.scenario == 'normal') ? 'badge bg-primary' : ((el.scenario == 'alternative') ? 'badge bg-secondary' : 'badge bg-danger');
+            $('.col-sorted-element').append(
+                ` 
+                <div class="todo position-relative mb-3" draggable="true" data-element='${JSON.stringify(el)}'>
+                    <span class="span-name">${el.id}</span>
+                    <small class="element-type" style="margin-right:10px;">(${elementType})</small>
+                    <span class="conf float-end" data-bs-toggle="modal" data-bs-target="#${el.id}-${index}"><i class="bi-gear"></i></span>
+                    <small class="float-end scenario-type ${classScenarioType}" style="margin-right:10px;">${el.scenario}</small>
+                    <small class="float-end scenario-type" style="margin-right:10px;">${el.inPage} page</small>
+                    ${generateModal(el,index)}
+                </div>`
+            )
+            $('.section-modal').append(
+                
+            )
+            
+        })
+
+        function generateModal(el,index){
+            let str = ``;
+            let form = ``;
+            form += generateForm(el);
+            str += 
+            `<!-- Modal -->
+            <div class="modal fade" id="${el.id}-${index}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel">Configure</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        ${form}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary btn-conf data-bs-dismiss="modal"">Conf</button>
+                    </div>
+                    </div>
+                </div>
+            </div>`
+            return str
+
+        }
+
+        // Button conf diclick
+        $('.todo').on('click','.btn-conf',function(el){
+            let todo = $(this).parent('div').parent('div').parent('div').parent('div').parent('div');
+            let element = todo.data('element');
+            let inputs = todo.find('input');
+            // update attr element
+            updateElement(element,inputs,todo)
+
+            $(this).parent('div').parent('div').parent('div').parent('div').parent('div').hide()
+            $('.modal-backdrop').remove();
+        });
+
+        $('.btn-save').on('click',function(){
+            updateUCS(scenarioType)
+        })
+
+        function updateElement(element,inputs,todo){
+
+            if(element.element == 'page'){
+                element.value = inputs[0].value // update value
+                element.salt = `{<size:20>${inputs[0].value}</size>}`
+            }
+            else if (element.element == 'input'){
+                element.label = inputs[0].value// update label
+                element.value = inputs[1].value// update value
+                if(element.label !== ''){
+                    element.salt = `{<size:10>**${element.label}:**</size>\n\"${element.value}\"}`
+                }else{
+                    element.salt = `{\"${element.value}\"}`
+                }
+            }
+            else if (element.element == 'button'){
+                element.value = inputs[0].value//update value
+                element.salt = `{[${element.value}]}`
+            }
+            else if (element.element == 'radio'){
+                element.label = inputs[0].value//update label
+                element.value = inputs[1].value//update value
+                element.checked = inputs[2].checked
+                if(element.label !== ''){
+                    if(element.checked){
+                        element.salt = `{<size:10>**${element.label}:**</size>\n(X) ${element.value}}`
+                    }else{
+                        element.salt = `{<size:10>**${element.label}:**</size>\n() ${element.value}}`
+                    }
+                }else{
+                    element.salt = `{() ${element.value}}`
+                }
+            }
+            else if (element.element == 'check_box'){
+                element.label = inputs[0].value//update label
+                element.value = inputs[1].value//update value
+                element.checked = inputs[2].checked
+                if (element.label !== '') {
+                    if (element.checked) {
+                        element.salt = `{<size:10>**${element.label}:**</size>\n[X] ${element.value}}`
+                    } else {
+                        element.salt = `{<size:10>**${element.label}:**</size>\n[] ${element.value}}`
+                    }
+                } else {
+                    element.salt = `{[] ${element.value}}`
+                }
+            }
+            else if(element.element == 'drop_list'){
+                element.label = inputs[0].value// update label
+                element.value = inputs[1].value// update value
+                if (element.label !== '') {
+                    element.salt = `{<size:10>**${element.label}:**</size>\n^${element.value}^}`
+                } else {
+                    element.salt = `{^${element.value}^}`
+                }
+            }
+            else if(element.element == 'text_area'){
+                element.label = inputs[0].value//update label
+                element.value = inputs[1].value//update value
+                if(element.label !== ''){
+                    element.salt = `{<size:10>**${element.label}:**</size>\n{+\n${element.value}\n.\n"                         "\n}}`
+                }else{
+                    element.salt = `{+\n${value}\n.\n"                         "\n}`
+                }
+            }
+            else if(element.element == 'help_text'){
+                element.value = inputs[0].value//update value
+                element.salt += `{<size:10>${element.value}</size>}`
+                
+            }
+            // Update data element ucs
+            todo.data('element',element)
+
+            // Update UCS
+            
+        }
+
+        function updateUCS(scenarioType){
+            let ucsSalt = '',
+                ucsElement = [],
+                needClosingPage = false,
+                countTodo
+            
+            countTodo = $('.col-sorted-element').find('.todo').length    
+
+            // Rangkai ucsSalt
+            ucsSalt +=
                 `@startsalt\n{\n`
             $('.col-sorted-element').find('.todo').each(function (id, el) {
-                salt += $(this).data('element').salt
-                salt += `\n.\n`
+                if($(this).data('element').element == 'page'){
+                    if (needClosingPage == false){
+                        ucsSalt += `{+\n`
+                        needClosingPage = true
+                    }else {
+                        ucsSalt += `}\n.\n`
+                        ucsSalt += `{+\n`
+                        needClosingPage = true
+                    }
+                }
+                ucsSalt += $(this).data('element').salt
+                ucsSalt += `\n.\n`
+                if( (needClosingPage == true) && (id+1 == countTodo)){
+                    ucsSalt += `}\n`
+                }
             });
-            salt += `}\n@endsalt`
+            ucsSalt += `}\n@endsalt`
+            
+            // Rangkai ucsElement
+            $('.todo').each(function(id,el){
+                ucsElement.push($(el).data('element'))
+            })
 
-            // Ajax update ucs object with salt
+            // Ajax
             let csrf_token = $('input[name="csrfmiddlewaretoken"]').val()
             $.ajax({
                 method: 'post',
-                url: '/updateUCSSalt/{{ ucs.id }}/',
+                url: '/updateUCS/{{ ucs.id }}/',
+                beforeSend: function(){
+                    $('#loading').show()
+                },
                 data: {
-                    "ucsId": '{{ ucs.id }}',
-                    'salt': salt,
+                    'scenarioType': scenarioType,
+                    'ucsSalt' : ucsSalt,
+                    'ucsElement' : JSON.stringify(ucsElement),
                     "csrfmiddlewaretoken": csrf_token
                 },
                 success: function (response) {
-                    window.location.href = '/result/{{ ucs.id }}/'
-                    console.log(response);
+                    $('#loading').hide()
+                    alert('success');
+                    window.location.href = '/layoutElement/{{ scenarioType }}/{{ ucs.id }}/'
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
+                    $('#loading').hide()
                     console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
                 },
             })
+        }
 
-            // window.location.href = ''
+
+        function generateForm(el){
+            // ['page', 'input', 'button', 'radio', 'check_box', 'text_area', 'drop_list', 'help_text'],
+            let form = '';
+            if (el.element == 'page') {
+                form = `
+                <div class="mb-3">
+                    <label for="pageValue" class="form-label">Page Value (Header): </label>
+                    <input type="text" id="pageValue" class="form-control input-label" placeholder="Value" value="${el.value}">
+                </div>
+                `
+            } 
+            else if (el.element == 'input') {
+                form += `
+                    <div class="mb-3">
+                        <label for="inputLabel" class="form-label">Input Label: </label>
+                        <input type="text" id="inputLabel" class="form-control input-label" placeholder="Value" value="${el.label}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="inputValue" class="form-label">Input Value: </label>
+                        <input type="text" id="inputValue" class="form-control input-value" placeholder="Value" value="${el.value}">
+                    </div>
+                `
+            }
+            else if (el.element == 'radio') {
+                form += `
+                    <div class="mb-3">
+                        <label for="radioLabel" class="form-label">Radio Label: </label>
+                        <input type="text" id="radioLabel" class="form-control input-label" placeholder="Label" value="${el.label}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="radioValue" class="form-label">Radio Value: </label>
+                        <input type="text" id="radioValue" class="form-control input-value" placeholder="Value" value="${el.value}">
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input input-check" type="checkbox" name="radioChecked" id="radioChecked" ${(el.checked == true) ? 'checked' : ''}>
+                        <label class="form-check-label" for="radioChecked">
+                            Checked Check Box
+                        </label>
+                    </div>
+                `
+            }
+            else if (el.element == 'check_box') {
+                form += `
+                    <div class="mb-3">
+                        <label for="check_boxLabel" class="form-label">Check Box Label: </label>
+                        <input type="text" id="checkBoxLabel" class="form-control input-label" placeholder="Label" value="${el.label}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="radioValue" class="form-label">Radio Value: </label>
+                        <input type="text" id="radioValue" class="form-control input-value" placeholder="Value" value="${el.value}">
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input input-check" type="checkbox" name="chekedRadio" id="checkedRadio" ${(el.checked == true) ? 'checked' : ''}>
+                        <label class="form-check-label" for="checkedRadio">
+                            Checked radio
+                        </label>
+                    </div>
+                `
+            }
+            else if (el.element == 'text_area') {
+                form += `
+                    <div class="mb-3">
+                        <label for="textAreaLabel" class="form-label">Text Area Label: </label>
+                        <input type="text" id="textAreaLabel" class="form-control input-label" placeholder="Value" value="${el.label}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="textAreaValue" class="form-label">Text Area Value: </label>
+                        <input type="text" id="textAreaValue" class="form-control input-value" placeholder="Value" ${el.value}>
+                    </div>
+                `
+            }
+            else if(el.element == 'button'){
+                form += 
+                `
+                    <div class="mb-3">
+                        <label for="buttonValue" class="form-label">Button Value: </label>
+                        <input type="text" id="buttonValue" class="form-control input-value" placeholder="Value" value="${el.value}">
+                    </div>
+                `
+            }
+            else if(el.element == 'drop_list'){
+                form += 
+                `
+                    <div class="mb-3">
+                        <label for="dropListLabel" class="form-label">Drop List Label: </label>
+                        <input type="text" id="dropListLabel" class="form-control input-label" placeholder="Value" value="${el.label}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="dropListValue" class="form-label">Button Value: </label>
+                        <input type="text" id="dropListValue" class="form-control input-value" placeholder="Value" value="${el.value}">
+                    </div>
+                `
+            }
+            else if(el.element == 'help_text'){
+                form +=
+                `
+                    <div class="mb-3">
+                        <label for="helpTextValue" class="form-label">Help Text Value: </label>
+                        <input type="text" id="helpTextValue" class="form-control input-value" placeholder="Value" value="${el.value}">
+                    </div>
+                `
+            }
+            return form
+        }
+        
+        
+        // Generate salt
+        $('.btn-generate').on('click', function (e) {
+            window.location.href = `/result/${scenarioType}/{{ ucs.id }}/`
         });
+        // End Generate salt
 
 
         // Jquery sortable
-        $(".todo").click(function () {
-            $(this).toggleClass("selected");
-        });
-
         $(".col-draggable").sortable({
             connectWith: ".col-draggable",
             start: function (e, info) {
-                info.item.siblings(".selected").appendTo(info.item);
             },
             stop: function (e, info) {
-                info.item.after(info.item.find(".todo"))
-                col_draggable = info.item.parent('div')
-
                 $('.col-sorted-element').find('.todo').each(function (index, el) {
                     $(this).data('element').sorted = true
                     $(this).data('element').sorted_index = index + 1
                 });
+
                 $('.col-unsorted-element').find('.todo').each(function (index, el) {
                     $(this).data('element').sorted = false
                     $(this).data('element').sorted_index = null
+                    
                 });
+            },
+            receive: function (e, info) {
+                // info.item.toggleClass("selected");
             }
         });
         //End Jquery sortable
     });
 </script>
-<script src="{% static '/js/layoutElement.js' %}"></script>
 {% endblock %}
