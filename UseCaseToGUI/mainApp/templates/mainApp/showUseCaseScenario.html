@@ -7,7 +7,7 @@
         <div class="card shadow mb-4">
             <!-- Card Header - Dropdown -->
             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                <h6 class="m-0 font-weight-bold text-primary">List Data Sistem</h6>
+                <h6 class="m-0 font-weight-bold text-primary">List Use Case scenario</h6>
             </div>
             <!-- Card Body -->
             <div class="card-body">
@@ -18,9 +18,9 @@
                     <thead>
                         <tr>
                             <th>No</th>
+                            <th>Nama Aktor</th>
                             <th>Nama Fitur</th>
                             <th>Deskripsi Fitur</th>
-                            <th>Date Created</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
@@ -28,13 +28,15 @@
                         {% for ucs in allUcs %}
                         <tr>
                             <td>{{ ucs.id }}</td>
+                            <td>{{ ucs.actor }}</td>
                             <td>{{ ucs.feature }}</td>
                             <td>{{ ucs.feature_description }}</td>
-                            <td>{{ ucs.date_created }}</td>
-                            <td> 
-                                <a href="" role="button" class="btn btn-warning">Edit</a>
-                                <a href="" role="button" class="btn btn-info">Conf</a>
-                                <a href="" role="button" class="btn btn-danger">Delete</a>
+                            <td class="d-flex justify-content-center"> 
+                                <a href="#" role="button" class="btn btn-info" style="margin-right: 10px;">Edit</a>
+                                <a href="/layoutElement/normal/{{ ucs.id }}" role="button" class="btn btn-primary" style="margin-right: 10px;">Normal Conf</a>
+                                <a href="/layoutElement/alternative/{{ ucs.id }}" role="button" class="btn btn-secondary" style="margin-right: 10px;">Alternative Conf</a>
+                                <a href="/layoutElement/exception/{{ ucs.id }}" role="button" class="btn btn-warning" style="margin-right: 10px;">Exception Conf</a>
+                                <a href="#" role="button" class="btn btn-danger" style="margin-right: 10px;">Delete</a>
                             </td>
                         </tr>
                         {% endfor %}
@@ -49,7 +51,9 @@
 {% block script %}
 <script>
     $(document).ready(function () {
-        $('#dataTable').DataTable();
+        $('#dataTable').DataTable({
+            order: [[0, 'desc']],
+        });
     });
 </script>
 {% endblock %}

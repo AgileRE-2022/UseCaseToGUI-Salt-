@@ -73,22 +73,42 @@
     $(document).ready(function () {
 
         let ucsElements,
+            ucsSalts,
             scenarioType = '{{ scenarioType }}'
         
         if(scenarioType == 'normal'){
-            ucsElements = JSON.parse('{{ ucs.normal_element|escapejs }}');
+            try{
+                ucsElements = JSON.parse('{{ ucs.normal_element|escapejs }}');
+                ucsSalts = JSON.parse('{{ ucs.normal_salt|escapejs }}');
+            }catch{
+                ucsSalts = []
+            }
         }
         if(scenarioType == 'alternative'){
-            ucsElements = JSON.parse('{{ ucs.alternative_element|escapejs }}');
+            try{
+                ucsElements = JSON.parse('{{ ucs.alternative_element|escapejs }}');
+                ucsSalts = JSON.parse('{{ ucs.alternative_salt|escapejs }}');
+            }catch{
+                ucsSalts = []
+            }
         }
         if(scenarioType == 'exception'){
-            ucsElements = JSON.parse('{{ ucs.exception_element|escapejs }}');
+            try{
+                ucsElements = JSON.parse('{{ ucs.exception_element|escapejs }}');
+                ucsSalts = JSON.parse('{{ ucs.exception_salt|escapejs }}');
+            }catch{
+                ucsSalts=[]
+            }
+        }
+
+        if(ucsElements.length == 0){
+            $('.btn-save').attr('disabled',true);
+            $('.btn-generate').attr('disabled',true);
         }
 
         // conf element
-        // Inisiasi element pada col
 
-        // Pisah sorted el dan unserted el
+        // Pisah sorted el dan unsorted el
         let sortedEl=[], unsortedEl=[]
         ucsElements.forEach(function (el, index) {
             if(el.sorted == false){
@@ -99,11 +119,10 @@
         })
 
         // urutkan sortedEl berdasarkan sorted index
-        
         sortedEl.sort(
-                function(a, b){
-                    return a.sorted_index - b.sorted_index;
-                }
+            function(a, b){
+                return a.sorted_index - b.sorted_index;
+            }
         ) 
         
         // Tempatkan unsorted el pada col unsorted el
@@ -118,14 +137,11 @@
                     <div class="todo position-relative mb-3" draggable="true" data-element='${JSON.stringify(el)}'>
                         <span class="span-name">${el.id}</span>
                         <small class="element-type" style="margin-right:10px;">(${elementType})</small>
-                        <span class="conf float-end" data-bs-toggle="modal" data-bs-target="#${el.id}-${index}"><i class="bi-gear"></i></span>
+                        <span class="conf float-end" data-bs-toggle="modal" data-bs-target="#${el.id}-${el.scenario}-${index}"><i class="bi-gear"></i></span>
                         <small class="float-end scenario-type ${classScenarioType}" style="margin-right:10px;">${el.scenario}</small>
                         <small class="float-end scenario-type" style="margin-right:10px;">${el.inPage} page</small>
                         ${generateModal(el,index)}
                     </div>`
-                )
-                $('.section-modal').append(
-                    
                 )
             }
         })
@@ -139,16 +155,12 @@
                 <div class="todo position-relative mb-3" draggable="true" data-element='${JSON.stringify(el)}'>
                     <span class="span-name">${el.id}</span>
                     <small class="element-type" style="margin-right:10px;">(${elementType})</small>
-                    <span class="conf float-end" data-bs-toggle="modal" data-bs-target="#${el.id}-${index}"><i class="bi-gear"></i></span>
+                    <span class="conf float-end" data-bs-toggle="modal" data-bs-target="#${el.id}-${el.scenario}-${index}"><i class="bi-gear"></i></span>
                     <small class="float-end scenario-type ${classScenarioType}" style="margin-right:10px;">${el.scenario}</small>
                     <small class="float-end scenario-type" style="margin-right:10px;">${el.inPage} page</small>
                     ${generateModal(el,index)}
                 </div>`
             )
-            $('.section-modal').append(
-                
-            )
-            
         })
 
         function generateModal(el,index){
@@ -157,7 +169,7 @@
             form += generateForm(el);
             str += 
             `<!-- Modal -->
-            <div class="modal fade" id="${el.id}-${index}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal fade" id="${el.id}-${el.scenario}-${index}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                     <div class="modal-header">
@@ -174,7 +186,6 @@
                 </div>
             </div>`
             return str
-
         }
 
         // Button conf diclick
@@ -182,10 +193,11 @@
             let todo = $(this).parent('div').parent('div').parent('div').parent('div').parent('div');
             let element = todo.data('element');
             let inputs = todo.find('input');
+
             // update attr element
             updateElement(element,inputs,todo)
 
-            $(this).parent('div').parent('div').parent('div').parent('div').parent('div').hide()
+            $(this).parent('div').parent('div').parent('div').parent('div').hide()
             $('.modal-backdrop').remove();
         });
 
@@ -194,7 +206,6 @@
         })
 
         function updateElement(element,inputs,todo){
-
             if(element.element == 'page'){
                 element.value = inputs[0].value // update value
                 element.salt = `{<size:20>${inputs[0].value}</size>}`
@@ -203,7 +214,7 @@
                 element.label = inputs[0].value// update label
                 element.value = inputs[1].value// update value
                 if(element.label !== ''){
-                    element.salt = `{<size:10>**${element.label}:**</size>\n\"${element.value}\"}`
+                    element.salt = `{<size:10>**${element.label}**</size>\n\"${element.value}\"}`
                 }else{
                     element.salt = `{\"${element.value}\"}`
                 }
@@ -218,12 +229,16 @@
                 element.checked = inputs[2].checked
                 if(element.label !== ''){
                     if(element.checked){
-                        element.salt = `{<size:10>**${element.label}:**</size>\n(X) ${element.value}}`
+                        element.salt = `{<size:10>**${element.label}**</size>\n(X) ${element.value}}`
                     }else{
-                        element.salt = `{<size:10>**${element.label}:**</size>\n() ${element.value}}`
+                        element.salt = `{<size:10>**${element.label}**</size>\n() ${element.value}}`
                     }
                 }else{
-                    element.salt = `{() ${element.value}}`
+                    if(element.checked){
+                        element.salt = `{(X) ${element.value}}`
+                    }else{
+                        element.salt = `{() ${element.value}}`
+                    }
                 }
             }
             else if (element.element == 'check_box'){
@@ -232,19 +247,24 @@
                 element.checked = inputs[2].checked
                 if (element.label !== '') {
                     if (element.checked) {
-                        element.salt = `{<size:10>**${element.label}:**</size>\n[X] ${element.value}}`
+                        element.salt = `{<size:10>**${element.label}**</size>\n[X] ${element.value}}`
                     } else {
-                        element.salt = `{<size:10>**${element.label}:**</size>\n[] ${element.value}}`
+                        element.salt = `{<size:10>**${element.label}**</size>\n[] ${element.value}}`
                     }
                 } else {
-                    element.salt = `{[] ${element.value}}`
+                    if (element.checked){
+                        element.salt = `{[X] ${element.value}}`
+                    }
+                    else{
+                        element.salt = `{[] ${element.value}}`
+                    }
                 }
             }
             else if(element.element == 'drop_list'){
                 element.label = inputs[0].value// update label
                 element.value = inputs[1].value// update value
                 if (element.label !== '') {
-                    element.salt = `{<size:10>**${element.label}:**</size>\n^${element.value}^}`
+                    element.salt = `{<size:10>**${element.label}**</size>\n^${element.value}^}`
                 } else {
                     element.salt = `{^${element.value}^}`
                 }
@@ -253,7 +273,7 @@
                 element.label = inputs[0].value//update label
                 element.value = inputs[1].value//update value
                 if(element.label !== ''){
-                    element.salt = `{<size:10>**${element.label}:**</size>\n{+\n${element.value}\n.\n"                         "\n}}`
+                    element.salt = `{<size:10>**${element.label}**</size>\n{+\n${element.value}\n.\n"                         "\n}}`
                 }else{
                     element.salt = `{+\n${value}\n.\n"                         "\n}`
                 }
@@ -263,9 +283,10 @@
                 element.salt += `{<size:10>${element.value}</size>}`
                 
             }
+                        
             // Update data element ucs
             todo.data('element',element)
-
+            console.log(todo.data('element'))
             // Update UCS
             
         }
@@ -282,6 +303,7 @@
             ucsSalt +=
                 `@startsalt\n{\n`
             $('.col-sorted-element').find('.todo').each(function (id, el) {
+                console.log(el)
                 if($(this).data('element').element == 'page'){
                     if (needClosingPage == false){
                         ucsSalt += `{+\n`
@@ -304,6 +326,7 @@
             $('.todo').each(function(id,el){
                 ucsElement.push($(el).data('element'))
             })
+
 
             // Ajax
             let csrf_token = $('input[name="csrfmiddlewaretoken"]').val()
@@ -459,7 +482,6 @@
                 $('.col-unsorted-element').find('.todo').each(function (index, el) {
                     $(this).data('element').sorted = false
                     $(this).data('element').sorted_index = null
-                    
                 });
             },
             receive: function (e, info) {

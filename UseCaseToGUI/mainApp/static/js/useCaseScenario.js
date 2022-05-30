@@ -12,6 +12,12 @@ $(document).ready(function () {
         clearTimeout(typingTimer);
         let content = $(this).val();
         let th = $(this);
+        th.addClass('active'); // add class active
+
+        // disable all textarea except this class
+        $('textarea').not(th).each(function(id,el){
+            $(this).attr('disabled',true)
+        })
         
 
         th.parent('div').siblings('div').find('.element-result').html(`<button class="btn btn-primary" type="button" disabled>
@@ -82,12 +88,21 @@ $(document).ready(function () {
                 // Kumpulin element dari semua scenario
                 sumEl = [];
                 sumEl = loadEl();
+
+                th.removeClass('active'); // remove class active
+
+                // ENABLE ALL TEXT AREA
+                $('textarea').not(th).each(function (id, el) {
+                    $(this).attr('disabled', false)
+                })
                 
             }, doneTypingInterval);
         } else {
             th.parent('div').siblings('div').find('.element-result').html('<span>Element Not Found</span>');
             th.parent('div').siblings('div').find('input').attr('value', '');
         }
+        
+
     });
     // End Text Area Word Checker
 
@@ -208,8 +223,8 @@ $(document).ready(function () {
                 "sumEl":JSON.stringify(sumEl),
                 "csrfmiddlewaretoken":csrf_token},
             success:function(response){
-                console.log('success');
                 console.log(response);
+                window.location.href = '/showUseCaseScenario/'
             },
             error: function (xhr, ajaxOptions, thrownError){
                 console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);

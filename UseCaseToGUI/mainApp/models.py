@@ -15,6 +15,9 @@ class UseCaseScenario(models.Model):
     normal_salt = models.TextField(null=True)
     alternative_salt = models.TextField(null=True)
     exception_salt = models.TextField(null=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
+
 
 class Action(models.Model):
     use_case_scenario = models.ForeignKey(UseCaseScenario, null=True, on_delete=models.SET_NULL)
