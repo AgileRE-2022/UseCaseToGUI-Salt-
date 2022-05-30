@@ -18,6 +18,7 @@
                     <thead>
                         <tr>
                             <th>No</th>
+                            <th>Nama Sistem</th>
                             <th>Nama Aktor</th>
                             <th>Nama Fitur</th>
                             <th>Deskripsi Fitur</th>
@@ -28,11 +29,12 @@
                         {% for ucs in allUcs %}
                         <tr>
                             <td>{{ ucs.id }}</td>
+                            <td>{{ ucs.sistem }}</td>
                             <td>{{ ucs.actor }}</td>
                             <td>{{ ucs.feature }}</td>
                             <td>{{ ucs.feature_description }}</td>
                             <td class="d-flex justify-content-center"> 
-                                <a href="#" role="button" class="btn btn-info" style="margin-right: 10px;">Edit</a>
+                                <a href="/formEditUCS/{{ ucs.id }}/" role="button" class="btn btn-info" style="margin-right: 10px;">Edit</a>
                                 <a href="/layoutElement/normal/{{ ucs.id }}" role="button" class="btn btn-primary" style="margin-right: 10px;">Normal Conf</a>
                                 <a href="/layoutElement/alternative/{{ ucs.id }}" role="button" class="btn btn-secondary" style="margin-right: 10px;">Alternative Conf</a>
                                 <a href="/layoutElement/exception/{{ ucs.id }}" role="button" class="btn btn-warning" style="margin-right: 10px;">Exception Conf</a>

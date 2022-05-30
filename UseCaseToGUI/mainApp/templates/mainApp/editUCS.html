@@ -1,0 +1,426 @@
+{% extends 'mainApp/main.html' %}
+{% load static %}
+
+{% block content %}
+
+<h3 class="mb-2">Kelola Use Case Scenario</h3>
+<div class="row row-form-sistem" style="margin-bottom: 70px;">
+    <div class="col">
+        <!-- Form -->
+        <form class="form-useCaseScenario" action="" method="post">
+            <input type="hidden" name="idUcs" value="{{ ucs.id }}">
+            {% csrf_token %}
+            <!-- Description Card -->
+            <div class="card shadow mb-4 card-description">
+                <!-- Card Header - Dropdown -->
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Use Case Scenario Description</h6>
+                </div>
+
+                <!-- Card Body -->
+                <div class="card-body">
+                    <div class="row row-actor-name mb-3">
+                        <div class="col-3">
+                            <span>Nama Aktor</span>
+                        </div>
+                        <div class="col-9">
+                            <input type="text" class="form-control" placeholder="Nama Aktor" aria-label="Username"
+                                aria-describedby="basic-addon1" required name="actor" value="{{ ucs.actor }}" required>
+                        </div>
+                    </div>
+
+                    <div class="row row-feature-name mb-3">
+                        <div class="col-3">
+                            <span>Nama Fitur</span>
+                        </div>
+                        <div class="col-9">
+                            <input type="text" class="form-control" name="feature_name" placeholder="Nama Fitur"
+                                aria-describedby="basic-addon1" value="{{ ucs.feature }}" required>
+                        </div>
+                    </div>
+
+                    <div class="row row-feature-description mb-3">
+                        <div class="col-3">
+                            <span>Deskripsi Fitur</span>
+                        </div>
+                        <div class="col-9">
+                            <input type="text" class="form-control" name="feature_description"
+                                placeholder="Deskripsi Fitur" aria-describedby="basic-addon1" value="{{ ucs.feature_description}}" required>
+                        </div>
+                    </div>
+
+                    <div class="row row-pre-condition mb-3">
+                        <div class="col-3">
+                            <span>Kondisi Awal</span>
+                        </div>
+                        <div class="col-9">
+                            <input type="text" class="form-control" placeholder="Kondisi Awal"
+                                aria-describedby="basic-addon1" name="pre_condition" value="{{ ucs.pre_condition }}" required>
+                        </div>
+                    </div>
+
+                    <div class="row row-post-condition mb-3">
+                        <div class="col-3">
+                            <span>Kondisi Akhir</span>
+                        </div>
+                        <div class="col-9">
+                            <input type="text" class="form-control" placeholder="Kondisi Akhir"
+                                aria-describedby="basic-addon1" name="post_condition" value="{{ ucs.post_condition }}" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End Description Card -->
+
+            <!-- Normal Card -->
+            <div class="card shadow mb-4 card-normal">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Normal Scenario</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row row-normal-scenario mb-3">
+                        <div class="col-2">
+                            <span>Skenario Normal</span>
+                        </div>
+                        <div class="col-10 col-normal-scenario">
+                            <div class="row row-append-normal-action">
+                                <input type="hidden" value="normal" name="scenario_type[]">
+                                <div class="col">
+                                    <div class="row row-normal-input mb-3">
+                                        <div class="col-1">
+                                            <small class="action-order">Action-1</small>
+                                        </div>
+                                        <div class="col-3">
+                                            <span>Role:</span>
+                                            <select class="form-select select-role" name="roles[]"
+                                                aria-label="Default select example" required>
+                                                <option selected value="">-- Select Roles --</option>
+                                                <option value="user">User</option>
+                                                <option value="sistem">Sistem</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-5">
+                                            <span>Action:</span>
+                                            <textarea class="form-control input-action" placeholder="Action"
+                                                name="actions[]" rows="3" required typeOfScenario="normal"
+                                                required></textarea>
+                                        </div>
+                                        <div class="col-3">
+                                            <span>Element:</span>
+                                            <div class="element-result"></div>
+                                            <input type="hidden" value="" name="elements[]"
+                                                class="normal-input-element">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row row-add-normal-action">
+                        <div class="col d-flex justify-content-end">
+                            <a class="btn btn-info add-normal-action">Add Action</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End Normal Card -->
+
+            <!-- Alternative Card -->
+            <div class="card shadow mb-4 card-alternative">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Alternative Scenario</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row row-alternative-scenario mb-3">
+                        <div class="col-2">
+                            <span>Alternative Scenario</span>
+                        </div>
+                        <div class="col-10 col-alternative-scenario">
+                            <div class="row row-append-alternative-action">
+                                <input type="hidden" value="alternative" name="scenario_type[]">
+                                <div class="col">
+                                    <div class="row row-alternative-input mb-3">
+                                        <div class="col-1">
+                                            <small class="action-order">Action-1</small>
+                                        </div>
+                                        <div class="col-3">
+                                            <span>Role:</span>
+                                            <select class="form-select select-role" name="roles[]"
+                                                aria-label="Default select example" required>
+                                                <option selected value="">-- Select Roles --</option>
+                                                <option value="user">User</option>
+                                                <option value="sistem">Sistem</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-5">
+                                            <span>Action:</span>
+                                            <textarea class="form-control input-action" placeholder="Action"
+                                                name="actions[]" rows="3" typeOfScenario="alternative"
+                                                required></textarea>
+                                        </div>
+                                        <div class="col-3">
+                                            <span>Element:</span>
+                                            <div class="element-result"></div>
+                                            <input type="hidden" value="" name="elements[]"
+                                                class="alternative-input-element">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row row-add-alternative-action">
+                        <div class="col d-flex justify-content-end">
+                            <a class="btn btn-info add-alternative-action">Add Action</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--End Alternative Card -->
+
+            <!-- Exception Card -->
+            <div class="card shadow mb-4 card-exception">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Exception Scenario</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row row-exception-scenario mb-3">
+                        <div class="col-2">
+                            <span>Exception Scenario</span>
+                        </div>
+                        <div class="col-10 col-exception-scenario">
+                            <div class="row row-append-exception-action">
+                                <div class="col">
+                                    <div class="row row-exception-input mb-3">
+                                        <input type="hidden" value="exception" name="scenario_type[]">
+                                        <div class="col-1">
+                                            <small class="action-order">Action-1</small>
+                                        </div>
+                                        <div class="col-3">
+                                            <span>Role:</span>
+                                            <select class="form-select select-role" name="roles[]"
+                                                aria-label="Default select example" required>
+                                                <option selected value="">-- Select Roles --</option>
+                                                <option value="user">User</option>
+                                                <option value="sistem">Sistem</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-5">
+                                            <span>Action:</span>
+                                            <textarea class="form-control input-action" placeholder="Action"
+                                                name="actions[]" rows="3" typeOfScenario="exception"
+                                                required></textarea>
+                                        </div>
+                                        <div class="col-3">
+                                            <span>Element:</span>
+                                            <div class="element-result"></div>
+                                            <input type="hidden" name="elements[]" value=""
+                                                class="exception-input-element">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row row-add-exception-action">
+                        <div class="col d-flex justify-content-end">
+                            <a class="btn btn-info add-exception-action">Add Action</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--End Exception Card -->
+
+            <div class="row">
+                <div class="col d-flex justify-content-center">
+                    <button class="btn btn-primary btn-edit" type="submit" style="min-width: 25%;">Edit</button>
+                </div>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+{%endblock%}
+
+{% block script %}
+
+<!-- JQUERY CONFIRM JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
+
+<script>
+    let actions = JSON.parse('{{ actions|escapejs }}')
+    // Insiasi action
+    actions.forEach(function(el,id){
+        if(el.fields.type_of_scenario == 'normal'){
+            firstActionForm = $('.row-append-normal-action')[0]; 
+            if($(firstActionForm).find('textarea').html()==''){
+                $(firstActionForm).find('textarea').html(el.fields.action);
+                $(firstActionForm).find('.element-result').html(el.fields.list_element);
+                $(firstActionForm).find('.normal-input-element').val(el.fields.input_element);
+                if(el.fields.role == 'user'){
+                    $(firstActionForm).find('option[value="user"]').attr('selected',true)
+                }else{
+                    $(firstActionForm).find('option[value="sistem"]').attr('selected', true)
+                }
+            }
+            else{
+                $('.col-normal-scenario').append(
+                    `
+                        <div class="row row-append-normal-action">
+                            <input type="hidden" value="normal" name="scenario_type[]">
+                            <div class="col">
+                                <div class="row row-normal-input">
+                                    <div class="col-1">
+                                        <small class="action-order">Action-1</small>
+                                    </div>
+                                    <div class="col-3">
+                                        <span>Role:</span>
+                                        <select class="form-select select-role" name="roles[]" aria-label="Default select example" required>
+                                            <option selected value="">-- Select Roles --</option>
+                                            <option value="user" ${(el.fields.role == 'user') ? 'selected' : '' }>User</option>
+                                            <option value="sistem" ${(el.fields.role == 'sistem') ? 'selected' : '' }>Sistem</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-5">
+                                        <span>Action:</span>
+                                        <textarea class="form-control input-action" placeholder="Action" name="actions[]" rows="3" typeOfScenario="normal" value="" required>${el.fields.action}</textarea>
+                                    </div>
+                                    <div class="col-3">
+                                        <span>Element:</span>
+                                        <div class="element-result">${el.fields.list_element}</div>
+                                        <input type="hidden" name="elements[]" value='${el.fields.input_element}' class="normal-input-element">
+                                    </div>
+                                </div>
+                                <div class="row row-remove-normal-action mb-3">
+                                    <div class="col-12 d-flex justify-content-end">
+                                        <a class="btn btn-link remove-normal-action">Delete Action</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                `)
+
+            }
+            // // Update Index Action
+            Array.from(document.querySelectorAll(`.row-normal-scenario small.action-order`)).forEach(function (el, index) {
+                el.innerHTML = "Action- " + (index + 1);
+            });
+        }
+        if(el.fields.type_of_scenario == 'alternative'){
+            firstActionForm = $('.row-append-alternative-action')[0]; 
+            if($(firstActionForm).find('textarea').html()==''){
+                $(firstActionForm).find('textarea').html(el.fields.action);
+                $(firstActionForm).find('.element-result').html(el.fields.list_element);
+                $(firstActionForm).find('.alternative-input-element').val(el.fields.input_element);
+                if(el.fields.role == 'user'){
+                    $(firstActionForm).find('option[value="user"]').attr('selected',true)
+                }else{
+                    $(firstActionForm).find('option[value="sistem"]').attr('selected', true)
+                }
+            }
+            else{
+                $('.col-alternative-scenario').append(
+                    `
+                        <div class="row row-append-alternative-action">
+                            <input type="hidden" value="alternative" name="scenario_type[]">
+                            <div class="col">
+                                <div class="row row-alternative-input">
+                                    <div class="col-1">
+                                        <small class="action-order">Action-1</small>
+                                    </div>
+                                    <div class="col-3">
+                                        <span>Role:</span>
+                                        <select class="form-select select-role" name="roles[]" aria-label="Default select example" required>
+                                            <option selected value="">-- Select Roles --</option>
+                                            <option value="user" ${(el.fields.role == 'user') ? 'selected' : '' }>User</option>
+                                            <option value="sistem" ${(el.fields.role == 'sistem') ? 'selected' : '' }>Sistem</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-5">
+                                        <span>Action:</span>
+                                        <textarea class="form-control input-action" placeholder="Action" name="actions[]" rows="3" typeOfScenario="alternative" value="" required>${el.fields.action}</textarea>
+                                    </div>
+                                    <div class="col-3">
+                                        <span>Element:</span>
+                                        <div class="element-result">${el.fields.list_element}</div>
+                                        <input type="hidden" name="elements[]" value='${el.fields.input_element}' class="alternative-input-element">
+                                    </div>
+                                </div>
+                                <div class="row row-remove-alternative-action mb-3">
+                                    <div class="col-12 d-flex justify-content-end">
+                                        <a class="btn btn-link remove-alternative-action">Delete Action</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                `)
+            }
+            // Update Index Action
+            Array.from(document.querySelectorAll(`.row-alternative-scenario small.action-order`)).forEach(function (el, index) {
+                el.innerHTML = "Action- " + (index + 1);
+            });
+        }
+        if(el.fields.type_of_scenario == 'exception'){
+            firstActionForm = $('.row-append-exception-action')[0]; 
+            if($(firstActionForm).find('textarea').html()==''){
+                $(firstActionForm).find('textarea').html(el.fields.action);
+                $(firstActionForm).find('.element-result').html(el.fields.list_element);
+                $(firstActionForm).find('.exception-input-element').val(el.fields.input_element);
+                if(el.fields.role == 'user'){
+                    $(firstActionForm).find('option[value="user"]').attr('selected',true)
+                }else{
+                    $(firstActionForm).find('option[value="sistem"]').attr('selected', true)
+                }
+            }
+            else{
+                $('.col-exception-scenario').append(
+                    `
+                        <div class="row row-append-exception-action">
+                            <input type="hidden" value="exception" name="scenario_type[]">
+                            <div class="col">
+                                <div class="row row-exception-input">
+                                    <div class="col-1">
+                                        <small class="action-order">Action-1</small>
+                                    </div>
+                                    <div class="col-3">
+                                        <span>Role:</span>
+                                        <select class="form-select select-role" name="roles[]" aria-label="Default select example" required>
+                                            <option selected value="">-- Select Roles --</option>
+                                            <option value="user" ${(el.fields.role == 'user') ? 'selected' : '' }>User</option>
+                                            <option value="sistem" ${(el.fields.role == 'sistem') ? 'selected' : '' }>Sistem</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-5">
+                                        <span>Action:</span>
+                                        <textarea class="form-control input-action" placeholder="Action" name="actions[]" rows="3" typeOfScenario="exception" value="" required>${el.fields.action}</textarea>
+                                    </div>
+                                    <div class="col-3">
+                                        <span>Element:</span>
+                                        <div class="element-result">${el.fields.list_element}</div>
+                                        <input type="hidden" name="elements[]" value='${el.fields.input_element}' class="exception-input-element">
+                                    </div>
+                                </div>
+                                <div class="row row-remove-exception-action mb-3">
+                                    <div class="col-12 d-flex justify-content-end">
+                                        <a class="btn btn-link remove-exception-action">Delete Action</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                `)
+            }
+            // // Update Index Action
+            Array.from(document.querySelectorAll(`.row-exception-scenario small.action-order`)).forEach(function (el, index) {
+                el.innerHTML = "Action- " + (index + 1);
+            });
+        }
+    });
+
+</script>
+
+<script src="{% static '/js/useCaseScenario.js' %}"></script>
+{% endblock %}

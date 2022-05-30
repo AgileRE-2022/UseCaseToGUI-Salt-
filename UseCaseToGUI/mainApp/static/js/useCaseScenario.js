@@ -208,28 +208,75 @@ $(document).ready(function () {
             actions.push(objAction);
         });
 
+        if($('.btn-edit').length == 1){ // submit edit ucs
+            let idUcs = $('input[name="idUcs"]').val()
+            // Update El
+            sumEl = [];
+            sumEl = loadEl();
 
-        // Jalankan ajax
-        $.ajax({
-            method:'POST',
-            url:'/createUseCaseScenario/',
-            data:{
-                "actor" :actor,
-                "featureName" :featureName,
-                "featureDescription" :featureDescription,
-                "preCondition" :preCondition,
-                "postCondition" :postCondition,
-                "actions" : JSON.stringify(actions),
-                "sumEl":JSON.stringify(sumEl),
-                "csrfmiddlewaretoken":csrf_token},
-            success:function(response){
-                console.log(response);
-                window.location.href = '/showUseCaseScenario/'
-            },
-            error: function (xhr, ajaxOptions, thrownError){
-                console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
-            },
-        })
+            $.confirm({
+                title: 'Edit UCS',
+                content: 'This action will remove your configuration!',
+                type: 'blue',
+                closeIcon: true,
+                buttons: {
+                    confirm: {
+                        text: 'Confirm',
+                        btnClass: 'btn-blue',
+                        keys: ['enter'],
+                        action: function () {
+                            $.ajax({
+                                method: 'POST',
+                                url: '/editUseCaseScenario/',
+                                data: {
+                                    "idUcs":idUcs,
+                                    "actor": actor,
+                                    "featureName": featureName,
+                                    "featureDescription": featureDescription,
+                                    "preCondition": preCondition,
+                                    "postCondition": postCondition,
+                                    "actions": JSON.stringify(actions),
+                                    "sumEl": JSON.stringify(sumEl),
+                                    "csrfmiddlewaretoken": csrf_token
+                                },
+                                success: function (response) {
+                                    console.log(response);
+                                    window.location.href = '/showUseCaseScenario/'
+                                },
+                                error: function (xhr, ajaxOptions, thrownError) {
+                                    console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+                                },
+                            })
+                        },
+                    },
+                    cancel: function () {
+                    },
+                }
+            });
+        }else{ // submit create ucs
+            // Jalankan ajax
+            $.ajax({
+                method:'POST',
+                url:'/createUseCaseScenario/',
+                data:{
+                    "actor" :actor,
+                    "featureName" :featureName,
+                    "featureDescription" :featureDescription,
+                    "preCondition" :preCondition,
+                    "postCondition" :postCondition,
+                    "actions" : JSON.stringify(actions),
+                    "sumEl":JSON.stringify(sumEl),
+                    "csrfmiddlewaretoken":csrf_token},
+                success:function(response){
+                    console.log(response);
+                    window.location.href = '/showUseCaseScenario/'
+                },
+                error: function (xhr, ajaxOptions, thrownError){
+                    console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+                },
+            })
+        }
+
     });
 
 

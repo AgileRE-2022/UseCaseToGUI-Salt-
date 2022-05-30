@@ -29,7 +29,11 @@ class Action(models.Model):
 
     # display name in admin panel
     def __str__(self):
-        display_name = 'Action(' + str(self.id) + ') - fk(' + str(self.use_case_scenario.id) + ')'
+        try:
+            display_name = 'Action(' + str(self.id) + ') - fk(' + str(self.use_case_scenario.id) + ')'
+        except:
+            display_name = 'Action(' + str(self.id) + ') - fk(' + '' + ')'
+
         return  display_name
     
 

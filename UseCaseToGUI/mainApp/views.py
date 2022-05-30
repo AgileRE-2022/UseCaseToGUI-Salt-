@@ -1,5 +1,6 @@
 from multiprocessing import context
 from django.http import JsonResponse
+from django.core import serializers
 import json
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
@@ -86,6 +87,7 @@ def createUseCaseScenario(request):
         
         return JsonResponse({"success":"success"})
 
+@login_required(login_url='login')
 def showUseCaseScenario(request):
     allUcs = UseCaseScenario.objects.order_by('-id').all()
     context={"allUcs":allUcs}
@@ -124,6 +126,33 @@ def updateUCS(request,pk):
             UseCaseScenario.objects.filter(pk=pk).update(exception_element=request.POST['ucsElement'],exception_salt=request.POST['ucsSalt'])
         
         return JsonResponse({"success":'success'})
+
+@login_required(login_url='login')
+def formEditUCS(request,pk):
+    ucs = UseCaseScenario.objects.get(id=pk)
+    actions = serializers.serialize('json',Action.objects.filter(use_case_scenario=ucs)) #query_set to json
+    context={'ucs':ucs,'actions':actions}
+    return render(request,'mainApp/editUCS.html',context)
+
+def editUseCaseScenario(request):
+    if request.method == "POST":
+        ucs = UseCaseScenario.objects.get(id=request.POST['idUcs'])
+        UseCaseScenario.objects.filter(id=request.POST['idUcs']).update(actor=request.POST['actor'],feature=request.POST['featureName'],feature_description=request.POST['featureDescription'],pre_condition=request.POST['preCondition'],post_condition=request.POST['postCondition'],normal_element=request.POST['sumEl'], alternative_element=request.POST['sumEl'], exception_element=request.POST['sumEl'],normal_salt=None,alternative_salt=None,exception_salt=None)
+
+        old_actions = Action.objects.filter(use_case_scenario=request.POST['idUcs']).delete()
+        # Create new action
+        actions = json.loads(request.POST['actions'])
+        for el in actions :
+            role = el['role']
+            action_ucs = el['action']
+            type_of_scenario = el['typeOfUCS']
+            list_element = el['listElement']
+            input_element = el['inputElement']
+
+            action=Action.objects.create(use_case_scenario=ucs, role=role,type_of_scenario=type_of_scenario, action=action_ucs, list_element=list_element, input_element=input_element)
+            action.save()
+        return JsonResponse({"success":'success'})
+
 
 
 

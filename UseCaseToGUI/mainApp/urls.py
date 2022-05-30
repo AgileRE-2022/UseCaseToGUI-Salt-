@@ -19,6 +19,8 @@ urlpatterns = [
     path('result/<str:scenarioType>/<str:pk>/', views.result, name="result"),
     path('updateUCS/<str:pk>/', views.updateUCS, name="updateUCS"),
 
+    path('formEditUCS/<str:pk>/', views.formEditUCS, name="formEditUCS"),
+    path('editUseCaseScenario/', views.editUseCaseScenario, name="editUseCaseScenario"),
 
 
 ]
