@@ -22,5 +22,9 @@ urlpatterns = [
     path('formEditUCS/<str:pk>/', views.formEditUCS, name="formEditUCS"),
     path('editUseCaseScenario/', views.editUseCaseScenario, name="editUseCaseScenario"),
 
+    # Put your code below!
+    
+    # path('addSistem/', views.addSistem, name="addSistem"),
+
 
 ]

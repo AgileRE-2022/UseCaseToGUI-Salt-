@@ -35,6 +35,12 @@ class Action(models.Model):
             display_name = 'Action(' + str(self.id) + ') - fk(' + '' + ')'
 
         return  display_name
+
+# Put your code below!
+
+# class Sistem(models.Model):
+
+# class Actor(models.Model):
     
 
     
