@@ -236,7 +236,7 @@ $(document).ready(function () {
                                     "preCondition": preCondition,
                                     "postCondition": postCondition,
                                     "actions": JSON.stringify(actions),
-                                    "sumEl": JSON.stringify(sumEl),
+                                    "sumEl": JSON.stringify(removeDuplicate(sumEl)),
                                     "csrfmiddlewaretoken": csrf_token
                                 },
                                 success: function (response) {
@@ -254,6 +254,7 @@ $(document).ready(function () {
                 }
             });
         }else{ // submit create ucs
+
             // Jalankan ajax
             $.ajax({
                 method:'POST',
@@ -265,10 +266,9 @@ $(document).ready(function () {
                     "preCondition" :preCondition,
                     "postCondition" :postCondition,
                     "actions" : JSON.stringify(actions),
-                    "sumEl":JSON.stringify(sumEl),
+                    "sumEl":JSON.stringify(removeDuplicate(sumEl)),
                     "csrfmiddlewaretoken":csrf_token},
                 success:function(response){
-                    console.log(response);
                     window.location.href = '/showUseCaseScenario/'
                 },
                 error: function (xhr, ajaxOptions, thrownError){
@@ -278,6 +278,35 @@ $(document).ready(function () {
         }
 
     });
+
+    // removeDuplicate([{ "element": "page", "id": "pageAdmin", "inPage": null, "value": "Dashboard Admin", "salt": "{<size:20>Dashboard Admin</size>}", "scenario": "alternative", "sorted": false, "sorted_index": null, "label": "", "checked": false }, { "element": "button", "id": "btnAddKategori", "inPage": "pageAdmin", "value": "Tambah Kategori", "salt": "{[Tambah Kategori]}", "scenario": "alternative", "sorted": false, "sorted_index": null, "label": "", "checked": false }, { "element": "page", "id": "pageDashboard", "inPage": null, "value": "Dashboard", "salt": "{<size:20>Dashboard</size>}", "scenario": "alternative", "sorted": false, "sorted_index": null, "label": "", "checked": false }, { "element": "button", "id": "btnAddKategori", "inPage": "pageAdmin", "value": "Tambah Kategori", "salt": "{[Tambah Kategori]}", "scenario": "alternative", "sorted": false, "sorted_index": null, "label": "", "checked": false }, { "element": "button", "id": "btnAddKategori", "inPage": "pageAdmin", "value": "Tambah Kategori", "salt": "{[Tambah Kategori]}", "scenario": "alternative", "sorted": false, "sorted_index": null, "label": "", "checked": false }, { "element": "button", "id": "btnAddKategori", "inPage": "pageAdmin", "value": "Tambah Kategori", "salt": "{[Tambah Kategori]}", "scenario": "alternative", "sorted": false, "sorted_index": null, "label": "", "checked": false }, { "element": "button", "id": "btnAddKategori", "inPage": "pageAdmin", "value": "Tambah Kategori", "salt": "{[Tambah Kategori]}", "scenario": "exception", "sorted": false, "sorted_index": null, "label": "", "checked": false }, { "element": "button", "id": "btnAddKategori", "inPage": "pageAdmin", "value": "Tambah Kategori", "salt": "{[Tambah Kategori]}", "scenario": "normal", "sorted": false, "sorted_index": null, "label": "", "checked": false },]);
+
+    function removeDuplicate(sumEl){
+        let resultEl = [];
+        let collectId = [];
+        let index;
+        sumEl.forEach(function(el,id){
+            index = collectId.indexOf(el.id);
+            if(index == -1){
+                collectId.push(el.id);
+                el.scenario = [el.scenario]
+                resultEl.push(el);
+            }else{
+                resultEl[index].scenario.push(el.scenario);
+
+                //get all unique value
+                resultEl[index].scenario = resultEl[index].scenario.filter(function(x,i,a){
+                    return a.indexOf(x) == i; 
+                })
+            }
+        })
+        // array to string array
+        resultEl.forEach(function(el,id){
+            el.scenario = JSON.stringify(el.scenario)
+        })
+
+        return resultEl;
+    }
 
 
     // Add Action
