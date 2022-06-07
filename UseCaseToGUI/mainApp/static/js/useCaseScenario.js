@@ -149,10 +149,10 @@ $(document).ready(function () {
         }else if (element == 'text_area'){
             if (value !== undefined){
                 salt += 
-                    `{+\n${value}\n.\n"                         "\n}`
+                    `{+\n${value}\n.\n.\n.}`
             }else {
                 salt +=
-                    `{+\nundefined\n.\n"                         "\n}`
+                    `{+\nundefined\n.\n.\n.}`
             }
         }else if(element == 'help_text'){
             if(value !== undefined){

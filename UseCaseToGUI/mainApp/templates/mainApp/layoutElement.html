@@ -273,9 +273,9 @@
                 element.label = inputs[0].value//update label
                 element.value = inputs[1].value//update value
                 if(element.label !== ''){
-                    element.salt = `{<size:10>**${element.label}**</size>\n{+\n${element.value}\n.\n"                         "\n}}`
+                    element.salt = `{<size:10>**${element.label}**</size>\n{+\n${element.value}\n.\n.\n.}}`
                 }else{
-                    element.salt = `{+\n${value}\n.\n"                         "\n}`
+                    element.salt = `{+\n${element.value}\n.\n.\n.}"                                                  "}`
                 }
             }
             else if(element.element == 'help_text'){
@@ -459,6 +459,28 @@
             }
             return form
         }
+
+        // function addLineBreak(str,num){
+        //     if (str == undefined){
+        //         return undefined;
+        //     }
+        //     let arr = [];
+        //     let stop = false;
+        //     let index = 0;
+        //     let result = '';
+        //     arr = str.split('');
+        //     while(stop !== true){
+        //         result += arr[index];
+        //         if(index !== 0 && index % num == 0){
+        //             result += '\n';
+        //         }    
+        //         if(arr[index+1] == undefined){
+        //             stop = true;
+        //         }
+        //         index++;
+        //     } 
+        //     return result;
+        // }
         
         
         // Generate salt
