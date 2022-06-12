@@ -6,12 +6,18 @@
 {% block content %}
 <body>
     <div class="row mb-3">
-        <div class="col">
+        <div class="col-6">
+            <h5>Wireframe:</h5>
             <img uml='{{ ucsSalt }}'>
+        </div>
+        <div class="col-6">
+            <h5>Salt:</h5>
+            <p style="white-space: pre-line; max-height: 500px; overflow-y: scroll; border: 2px solid rgb(214, 214, 214);">{{ ucsSalt }}</p>
+            <button class="btn btn-primary">Copy</button>
         </div>
     </div>
     <div class="row">
-        <div class="col">
+        <div class="col-6">
             <a href="/layoutElement/{{ scenarioType }}/{{ ucsId }}/" class="btn btn-primary" role="button">Layout Element</a>
         </div>
     </div>
