@@ -1,5 +1,6 @@
 from pyexpat import model
 from django.db import models
+from django.contrib.auth.models import User
 
 # Create your models here.
 
@@ -17,6 +18,7 @@ class UseCaseScenario(models.Model):
     exception_salt = models.TextField(null=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
+    created_by = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 
 
 class Action(models.Model):
@@ -26,6 +28,7 @@ class Action(models.Model):
     action = models.TextField(null=True)
     list_element = models.TextField(null=True)
     input_element = models.TextField(null=True)
+    created_by = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 
     # display name in admin panel
     def __str__(self):
