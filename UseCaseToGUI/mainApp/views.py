@@ -70,11 +70,11 @@ def useCaseScenario(request):
 @login_required(login_url='login')
 def createUseCaseScenario(request):
     if request.user.is_authenticated:
-        user_id = request.user.id
+        user = request.user
 
     if request.method == "POST":
         # Create usecasescenario object
-        ucs = UseCaseScenario.objects.create(actor=request.POST['actor'], feature=request.POST['featureName'], feature_description=request.POST['featureDescription'], pre_condition=request.POST['preCondition'], post_condition=request.POST['postCondition'], normal_element=request.POST['sumEl'], alternative_element=request.POST['sumEl'], exception_element=request.POST['sumEl'], created_by=user_id)
+        ucs = UseCaseScenario.objects.create(system=request.POST['system'], actor=request.POST['actor'], feature=request.POST['featureName'], feature_description=request.POST['featureDescription'], pre_condition=request.POST['preCondition'], post_condition=request.POST['postCondition'], normal_element=request.POST['sumEl'], alternative_element=request.POST['sumEl'], exception_element=request.POST['sumEl'], created_by=user)
         
         # Craete action object
         actions = json.loads(request.POST['actions'])
@@ -85,7 +85,7 @@ def createUseCaseScenario(request):
             list_element = el['listElement']
             input_element = el['inputElement']
 
-            action=Action.objects.create(use_case_scenario=ucs, role=role,type_of_scenario=type_of_scenario, action=action_ucs, list_element=list_element, input_element=input_element,created_by=user_id)
+            action=Action.objects.create(use_case_scenario=ucs, role=role,type_of_scenario=type_of_scenario, action=action_ucs, list_element=list_element, input_element=input_element,created_by=user)
             action.save()
         
         return JsonResponse({"success":"success"})
@@ -142,11 +142,11 @@ def formEditUCS(request,pk):
 
 def editUseCaseScenario(request):
     if request.user.is_authenticated:
-        user_id = request.user.id
+        user = request.user
 
     if request.method == "POST":
         ucs = UseCaseScenario.objects.get(id=request.POST['idUcs'])
-        UseCaseScenario.objects.filter(id=request.POST['idUcs']).update(actor=request.POST['actor'],feature=request.POST['featureName'],feature_description=request.POST['featureDescription'],pre_condition=request.POST['preCondition'],post_condition=request.POST['postCondition'],normal_element=request.POST['sumEl'], alternative_element=request.POST['sumEl'], exception_element=request.POST['sumEl'],normal_salt=None,alternative_salt=None,exception_salt=None)
+        UseCaseScenario.objects.filter(id=request.POST['idUcs']).update(system=request.POST['system'],actor=request.POST['actor'],feature=request.POST['featureName'],feature_description=request.POST['featureDescription'],pre_condition=request.POST['preCondition'],post_condition=request.POST['postCondition'],normal_element=request.POST['sumEl'], alternative_element=request.POST['sumEl'], exception_element=request.POST['sumEl'],normal_salt=None,alternative_salt=None,exception_salt=None)
 
         old_actions = Action.objects.filter(use_case_scenario=request.POST['idUcs']).delete()
         # Create new action
@@ -158,7 +158,7 @@ def editUseCaseScenario(request):
             list_element = el['listElement']
             input_element = el['inputElement']
 
-            action=Action.objects.create(use_case_scenario=ucs, role=role,type_of_scenario=type_of_scenario, action=action_ucs, list_element=list_element, input_element=input_element, created_by=user_id)
+            action=Action.objects.create(use_case_scenario=ucs, role=role,type_of_scenario=type_of_scenario, action=action_ucs, list_element=list_element, input_element=input_element, created_by=user)
             action.save()
         return JsonResponse({"success":'success'})
 

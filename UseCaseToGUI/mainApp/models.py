@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 # Create your models here.
 
 class UseCaseScenario(models.Model):
+    system = models.CharField(max_length=200,null=True)
     actor = models.CharField(max_length=200,null=True)
     feature = models.CharField(max_length=200,null=True)
     feature_description = models.CharField(max_length=200,null=True)

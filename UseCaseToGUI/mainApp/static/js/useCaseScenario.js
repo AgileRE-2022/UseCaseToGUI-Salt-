@@ -172,6 +172,7 @@ $(document).ready(function () {
     $('.form-useCaseScenario').on('submit', function(e){
         e.preventDefault();
         let csrf_token = $('input[name="csrfmiddlewaretoken"]').val(),
+            system = $('input[name="system"]').val(),
             actor = $('input[name="actor"]').val(),
             featureName = $('input[name="feature_name"]').val(),
             featureDescription = $('input[name="feature_description"]').val(),
@@ -208,6 +209,7 @@ $(document).ready(function () {
             actions.push(objAction);
         });
 
+
         if($('.btn-edit').length == 1){ // submit edit ucs
             let idUcs = $('input[name="idUcs"]').val()
             // Update El
@@ -230,6 +232,7 @@ $(document).ready(function () {
                                 url: '/editUseCaseScenario/',
                                 data: {
                                     "idUcs":idUcs,
+                                    "system": system,
                                     "actor": actor,
                                     "featureName": featureName,
                                     "featureDescription": featureDescription,
@@ -260,6 +263,7 @@ $(document).ready(function () {
                 method:'POST',
                 url:'/createUseCaseScenario/',
                 data:{
+                    "system" :system,
                     "actor" :actor,
                     "featureName" :featureName,
                     "featureDescription" :featureDescription,
