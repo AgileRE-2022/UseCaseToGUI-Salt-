@@ -106,7 +106,7 @@
             $('.btn-generate').attr('disabled',true);
         }
 
-        // conf element
+        // rangkai element
 
         // Pisah sorted el dan unsorted el
         let sortedEl=[], unsortedEl=[]
@@ -128,7 +128,9 @@
         // Tempatkan unsorted el pada col unsorted el
         unsortedEl.forEach(function(el,index){
             elementType = el.element;
-            classScenarioType = (el.scenario == 'normal') ? 'badge bg-primary' : ((el.scenario == 'alternative') ? 'badge bg-secondary' : 'badge bg-danger');
+            strScenarioBadge = generateScenarioBadge(JSON.parse(el.scenario));
+            strModal = generateModal(el, index);
+
             if(el.sorted == undefined || el.sorted == false){
                 el.sorted = false;
                 el.sorted_index = null;
@@ -137,10 +139,10 @@
                     <div class="todo position-relative mb-3" draggable="true" data-element='${JSON.stringify(el)}'>
                         <span class="span-name">${el.id}</span>
                         <small class="element-type" style="margin-right:10px;">(${elementType})</small>
-                        <span class="conf float-end" data-bs-toggle="modal" data-bs-target="#${el.id}-${el.scenario}-${index}"><i class="bi-gear"></i></span>
-                        <small class="float-end scenario-type ${classScenarioType}" style="margin-right:10px;">${el.scenario}</small>
+                        <span class="conf float-end" data-bs-toggle="modal" data-bs-target="#${el.id}-${index}"><i class="bi-gear"></i></span>
+                        ${strScenarioBadge}
                         <small class="float-end scenario-type" style="margin-right:10px;">${el.inPage} page</small>
-                        ${generateModal(el,index)}
+                        ${strModal}
                     </div>`
                 )
             }
@@ -149,19 +151,37 @@
         // Tempatkan sorted el pada col sorted el
         sortedEl.forEach(function(el,index){
             elementType = el.element;
-            classScenarioType = (el.scenario == 'normal') ? 'badge bg-primary' : ((el.scenario == 'alternative') ? 'badge bg-secondary' : 'badge bg-danger');
+            strScenarioBadge = generateScenarioBadge(JSON.parse(el.scenario));
+            strModal = generateModal(el, index);
             $('.col-sorted-element').append(
                 ` 
                 <div class="todo position-relative mb-3" draggable="true" data-element='${JSON.stringify(el)}'>
                     <span class="span-name">${el.id}</span>
                     <small class="element-type" style="margin-right:10px;">(${elementType})</small>
-                    <span class="conf float-end" data-bs-toggle="modal" data-bs-target="#${el.id}-${el.scenario}-${index}"><i class="bi-gear"></i></span>
-                    <small class="float-end scenario-type ${classScenarioType}" style="margin-right:10px;">${el.scenario}</small>
+                    <span class="conf float-end" data-bs-toggle="modal" data-bs-target="#${el.id}-${index}"><i class="bi-gear"></i></span>
+                    ${strScenarioBadge}
                     <small class="float-end scenario-type" style="margin-right:10px;">${el.inPage} page</small>
-                    ${generateModal(el,index)}
+                    ${strModal}
                 </div>`
             )
         })
+
+        function generateScenarioBadge(arrScenario){
+            let str =  `<span class="float-end badge bg-secondary bg-gradient" style="margin-right:10px;">|`;
+            arrScenario.forEach(function(el,index){
+                if(el == 'normal'){
+                    str += ` ${el} |`
+                }
+                if(el == 'alternative'){
+                    str += ` ${el} |`
+                }
+                if(el == 'exception'){
+                    str += ` ${el} |`
+                }
+            });
+            str+= `</span>`
+            return str;
+        }
 
         function generateModal(el,index){
             let str = ``;
@@ -169,7 +189,7 @@
             form += generateForm(el);
             str += 
             `<!-- Modal -->
-            <div class="modal fade" id="${el.id}-${el.scenario}-${index}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal fade" id="${el.id}-${index}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                     <div class="modal-header">
