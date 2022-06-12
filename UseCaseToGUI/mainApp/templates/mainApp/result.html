@@ -12,8 +12,8 @@
         </div>
         <div class="col-6">
             <h5>Salt:</h5>
-            <p style="white-space: pre-line; max-height: 500px; overflow-y: scroll; border: 2px solid rgb(214, 214, 214);">{{ ucsSalt }}</p>
-            <button class="btn btn-primary">Copy</button>
+            <p id="salt" style="white-space: pre-line; max-height: 500px; overflow-y: scroll; border: 2px solid rgb(214, 214, 214);">{{ ucsSalt }}</p>
+            <button id="btnCopy" class="btn btn-info">Copy</button>
         </div>
     </div>
     <div class="row">
@@ -24,4 +24,20 @@
     <script type="text/javascript" src="{% static '/js/plantuml/jquery.js' %}"></script>
     <script type="text/javascript" src="{% static '/js/plantuml/jquery_plantuml.js' %}"></script>
     <!-- <script type="text/javascript" src="{% static '/js/plantuml/rawdeflate.js' %}"></script> -->
+    <script>
+        $(document).ready(function(){
+            $('#btnCopy').on('click',function(){
+                navigator.clipboard.writeText(htmlDecode($('p#salt').html()));
+                alert("Copy Text to Clipboard");
+            });
+
+            function htmlDecode(input) {
+                var doc = new DOMParser().parseFromString(input, "text/html");
+                return doc.documentElement.textContent;
+            }
+            function escapeHtml(str) {
+                return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+            }
+        });
+    </script>
 {% endblock %}
