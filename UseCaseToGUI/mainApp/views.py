@@ -166,7 +166,6 @@ def editUseCaseScenario(request):
 
 # def addSistem(request):
 
-
-
-
-
+def deleteUcs(request, pk):
+    ucs = UseCaseScenario.objects.filter(id=pk).delete()
+    return redirect('/showUseCaseScenario')

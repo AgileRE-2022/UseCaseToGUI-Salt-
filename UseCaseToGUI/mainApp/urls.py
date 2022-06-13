@@ -26,5 +26,7 @@ urlpatterns = [
     
     # path('addSistem/', views.addSistem, name="addSistem"),
 
+    path('deleteUcs/<str:pk>/', views.deleteUcs, name="deleteUcs"),
+
 
 ]
