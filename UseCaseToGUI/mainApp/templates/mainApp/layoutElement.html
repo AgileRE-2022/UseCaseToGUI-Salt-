@@ -29,7 +29,7 @@
 
 {% block content %}
 <div class="layout-container">
-    <h4 class="mb-4">Layout Element</h3>
+    <h4 class="mb-4" style="text-transform:capitalize;">Layout Element <small>({{ scenarioType }} Scenario)</small></h3>
     <div class="row row-button mb-2">
         <div class="col-6"></div>
         <div class="col-6 d-flex justify-content-end">
@@ -167,7 +167,7 @@
         })
 
         function generateScenarioBadge(arrScenario){
-            let str =  `<span class="float-end badge bg-secondary bg-gradient" style="margin-right:10px;">|`;
+            let str =  `<span class="float-end badge bg-success bg-gradient" style="margin-right:10px;">|`;
             arrScenario.forEach(function(el,index){
                 if(el == 'normal'){
                     str += ` ${el} |`
