@@ -42,7 +42,7 @@ Jika tidak ada kesalahan, pengguna akan memasuki halaman home aplikasi seperi be
 
 # Cara Penggunaan Aplikasi
 1. Buat Use Case Scenario baru dengan menekan tombol "Create Use Case Scenario" pada halaman Home.
-![image](https://user-images.githubusercontent.com/94850405/175884982-a98c4a89-da7f-4c6b-a17c-b49fd687a0dd.png)
+![image](https://user-images.githubusercontent.com/94850405/175887468-594b6317-5bf8-4610-bb32-05d519cd8dd5.png)
 
 2. Melengkapi data Use Case Scenario.
 ![image](https://user-images.githubusercontent.com/94850405/175885224-fc692779-f94a-49e4-b38b-5be75ba0afa2.png)
