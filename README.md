@@ -1,8 +1,8 @@
 # UseCaseToGUI-Salt-
-UseCaseToGUI merupakan aplikasi yang digunakan untuk memproses Use Cases Scenario menjadi Graphical User Interface (GUI) berbasis Salt.
+UseCaseToGUI merupakan aplikasi yang digunakan untuk memproses Use Cases Specification menjadi Graphical User Interface (GUI) berbasis Salt.
 
 # Cara Kerja Aplikasi
-Pada aplikasi ini pengguna akan melengkapi data-data use case scenario untuk membuat GUI berbasis salt. Data-data yang perlu diisi antara lain:
+Pada aplikasi ini pengguna akan melengkapi data-data use case specification untuk membuat GUI berbasis salt. Data-data yang perlu diisi antara lain:
 
 * Nama Sistem
 * Nama Aktor
@@ -26,7 +26,7 @@ Text Area     | {text_area#element_id>value}
 Drop List     | {drop_list#element_id>value}
 Help Text     | {help_text#element_id>value}
 
-Setelah memenuhi data-data use case scenario, pengguna dapat menata urutan elemen dan meng-generate GUI dari skenario normal, alternatif, atau eksepsi.
+Setelah memenuhi data-data use case specification, pengguna dapat menata urutan elemen dan meng-generate GUI dari skenario normal, alternatif, atau eksepsi.
 
 # Cara Instalasi
 Berikut ini adalah langkah-langkah untuk menginstal Aplikasi UseCase 2020 :
